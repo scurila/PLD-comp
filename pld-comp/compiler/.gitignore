@@ -1,6 +1,4 @@
 generated/
 build/
 *.out
-antlr/
-.idea/
-
+ifcc

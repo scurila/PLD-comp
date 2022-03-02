@@ -2,24 +2,20 @@
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {
-	std::cout << ".text\n.globl main\nmain: \n";
+	std::cout << ".text\n"
+	          << ".globl main\n"
+			  << "main: \n";
 
-	/*int retval = stoi(ctx->CONST()->getText());
-	std::cout<<".globl	main\n"
-		" main: \n"
-		" 	movl	$"<<retval<<", %eax\n"
-		" 	ret\n";
-*/
-	return 0;
+	return visitChildren(ctx);
 }
 
 		
 antlrcpp::Any CodeGenVisitor::visitReturnConst(ifccParser::ReturnConstContext *context) 
 { 
-	std::cout << "hello";
 	int retval = stoi(context->CONST()->getText());
-	std::cout << "  movl $" << retval << ", %eax\n"
-	 		<< "ret\n";
+	std::cout 
+			<< "  movl $" << retval << ", %eax\n"
+	 		<< "  ret\n";
 
 	return 0;
 }

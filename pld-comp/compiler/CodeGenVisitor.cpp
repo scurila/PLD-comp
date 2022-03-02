@@ -24,7 +24,7 @@ antlrcpp::Any CodeGenVisitor::visitReturnConst(ifccParser::ReturnConstContext *c
 	return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitInitVarCte(ifccParser::InitVarCteContext *context)
+antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext *context)
 {
 	int cteVal = stoi(context->CONST()->getText());
 	std::string literalName = context->LITERAL()->getText();
@@ -33,5 +33,21 @@ antlrcpp::Any CodeGenVisitor::visitInitVarCte(ifccParser::InitVarCteContext *con
 
 	std::cout
 		<< "  movl $" << cteVal << ", " << (-4 * count) << "(%rbp)\n";
+	
+	return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *context) 
+{
+	return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *context)
+{
+	return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *context)
+{
 	return 0;
 }

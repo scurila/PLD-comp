@@ -8,8 +8,13 @@ instrlist: ( instr ';' instrlist )
      | '}' ;
 
 instr: RETURN CONST   # ReturnConst
-     | type LITERAL '=' CONST  # InitVarCte
+     | type LITERAL '=' CONST  # InitVarConst
+     | type literallist  # DeclareVar
+     | LITERAL '=' LITERAL # AssignVar
+     | LITERAL '=' CONST   # AssignConst
      ;
+
+literallist: LITERAL ',' literallist | LITERAL ;
 
 type : 'char' | 'int' ;
 

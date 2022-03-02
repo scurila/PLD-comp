@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This wrapper script will be invoked from the test harness every time it needs to run your compiler.
 #

@@ -1,0 +1,9 @@
+antlr/
+.idea/
+.vscode/
+tags
+.DS_Store
+tests/ifcc-test-output/
+compiler/ifcc-test-output/
+compiler/ifcc
+

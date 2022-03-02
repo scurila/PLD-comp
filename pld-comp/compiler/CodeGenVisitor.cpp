@@ -32,6 +32,6 @@ antlrcpp::Any CodeGenVisitor::visitInitVarCte(ifccParser::InitVarCteContext *con
 	int count = 1;
 
 	std::cout
-		<< "  movl $" << cteVal << ", " << (-4 * count) << "(%rbp)";
+		<< "  movl $" << cteVal << ", " << (-4 * count) << "(%rbp)\n";
 	return 0;
 }

@@ -4,14 +4,17 @@ axiom : prog ;
 
 prog : 'int' 'main' '(' ')' '{' instrlist ;
 
-instrlist: ( instr ';' instrlist ) | '}' ;
+instrlist: ( instr ';' instrlist ) 
+     | '}' ;
 
 instr: RETURN CONST   # ReturnConst
-     | TYPE LITERAL '=' CONST  # InitVarCte
+     | type LITERAL '=' CONST  # InitVarCte
      ;
 
+type : 'char' | 'int' ;
+
+
 RETURN : 'return' ;
-TYPE : 'char' | 'int' ;
 
 CONST : [0-9]+ ;
 LITERAL: [a-zA-Z]+ ;

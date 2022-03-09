@@ -55,19 +55,20 @@ antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *con
 		}
 	}	
 
+	cout << funcCtxt.top().get("b") << endl;
+
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *context)
 {
-	string var1 = context->LITERAL(0)->getText();
-	string var2 = context->LITERAL(1)->getText();
-	  
-	int index = 4; //TODO
+	string var1 = context->LITERAL()[0]->getText();
+	string var2 = context->LITERAL()[1]->getText();
+
 	std::cout 
-		<< "  movl	"<< -1*index <<"(%rbp), " << "(%eax)\n";
+		<< "  movl	"<< -1* funcCtxt.top().get(var2)->bp_offset <<"(%rbp), " << "(%eax)\n";
 	std::cout
-		<< "  movl	 %eax, " <<  -1*index <<"(%rbp)\n";	
+		<< "  movl	 %eax, " <<  -1*funcCtxt.top().get(var1)->bp_offset <<"(%rbp)\n";	
 	return 0;
 }
 

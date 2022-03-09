@@ -25,7 +25,16 @@ antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *con
 			<< "  popq %rbp\n"
 	 		<< "  ret\n";
 */
-std::cout << "# return\n";
+
+	visit(context->children[2]); // visit expr
+
+	std::cout << "# return\n";
+	
+	std::cout << "  popq %rax\n"
+			  << "  popq %rbp\n"
+			  << "  ret\n";
+
+	
 	return 0;
 }
 
@@ -67,8 +76,19 @@ antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *c
 
 
 antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *context) { 
+	
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack 
+	
 	std::cout << "# assign expr\n";
-	return visitChildren(context);
+
+	std::string literal = context->LITERAL()->getText();
+	// Entry* literalEntry = funcCtxt.top().get(literal);
+
+	std::cout << "  popq %rax\n" 
+			  << "  movq %rax, " << /*-literalEntry->bp_offset << */"(%rbp)\n";
+
+	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) {
@@ -87,15 +107,16 @@ antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *c
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorAdd(ifccParser::OperatorAddContext *context) {
-	std::cout << "# add\n";
 	
 	visit(context->children[0]);// pushes result in the stack 
-	visit(context->children[1]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack 
 
-	std::cout<<	"  popq %ebx\n"//right member
-			 << "  popq %eax\n"//left member
-			 << "  add %eax, %ebx\n"
-			 << "  pushq %ebx\n";
+	std::cout << "# add\n";
+
+	std::cout<<	"  popq %rbx\n"//right member
+			 << "  popq %rax\n"//left member
+			 << "  add %rax, %rbx\n"
+			 << "  pushq %rbx\n";
 	
 	return 0; 
  }
@@ -108,8 +129,8 @@ antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *c
 antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
 	std::cout << "# const expr\n";
-	/*int val = stoi(ctx->CONST()->getText());
-	std::cout << "pushq $" << val << std::endl;*/
+	int val = stoi(ctx->CONST()->getText());
+	std::cout << "  pushq $" << val << std::endl;
 	return 0;
 }
 

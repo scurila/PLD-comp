@@ -11,7 +11,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 			  << "main: \n" 
 			  << "  pushq %rbp\n"
 			  << "  movq %rsp, %rbp\n";
-
+	
 	funcCtxt.push(SymbolTable());
 	return visitChildren(ctx);
 }
@@ -19,12 +19,12 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 		
 antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *context) 
 { 
-	int retval = stoi(context->CONST()->getText());
+	/*int retval = stoi(context->CONST()->getText());
 	std::cout 
 			<< "  movl $" << retval << ", %eax\n"
 			<< "  popq %rbp\n"
 	 		<< "  ret\n";
-
+	*/
 	return 0;
 }
 
@@ -40,8 +40,6 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	} else {
 		// -> erreur ici ? variable serait déjà déclarée dans le scope 
 	}
-
-	
 	
 	return 0;
 }
@@ -62,19 +60,43 @@ antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *c
 }
 
 
+antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *context) { 
+	return 0;
+}
 
-antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) {
+	return 0;
+}
 
-antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorPar(ifccParser::OperatorParContext *context) {
+	return 0;
+}
 
-antlrcpp::Any CodeGenVisitor::visitOperatorPar(ifccParser::OperatorParContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { 
+	return 0;
+}
 
-antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorAdd(ifccParser::OperatorAddContext *context) {
+	
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[1]);// pushes result in the stack 
 
-antlrcpp::Any CodeGenVisitor::visitOperatorAdd(ifccParser::OperatorAddContext *context) { };
+	std::cout<<	"popq %ebx\n"//right member
+			<<"popq %eax\n"//left member
+			<< "add %eax, %ebx"
+			<< "pushq %ebx";
+	
+	return 0; 
+ }
 
-antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *context) {
+	return 0;
+ }
 
-antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) { };
+antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) { 
+	return 0;
+}
 
-antlrcpp::Any CodeGenVisitor::visitOperatorMult(ifccParser::OperatorMultContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorMult(ifccParser::OperatorMultContext *context) { 
+	return 0;
+}

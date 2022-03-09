@@ -22,7 +22,8 @@ class SymbolTable {
         SymbolTable() : topOffset(0) {};
         bool addEntry(string name, string type);
         Entry* get(string name);
+        int topOffset;
     protected: 
         unordered_map<string, Entry*> table;
-        int topOffset;
+        
 };

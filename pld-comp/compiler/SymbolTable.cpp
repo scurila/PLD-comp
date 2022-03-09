@@ -1,15 +1,15 @@
 #include "SymbolTable.h"
 
 bool SymbolTable::addEntry(string name, string type) {
-	int size = 0;
-	for (int i = 0; i < sizeof(VarTypeName)/sizeof(VarTypeName[0]) ; i++) {
+	int size = 4;
+	/*for (int i = 0; i < sizeof(VarTypeName)/sizeof(VarTypeName[0]) ; i++) {
 		if (type == VarTypeName[i]) {
 			size = VarTypeSize[i];
 		}
-	}
+	}*/
     if (table.find(name) == table.end()) {
 		// on crée la var°
-		table.insert(make_pair("name", new Entry(name, type, topOffset + size, size)));
+		table.insert(make_pair(name, new Entry(name, type, topOffset + size, size)));
         topOffset += size;
         return true; 
 	} else {

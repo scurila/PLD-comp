@@ -52,10 +52,9 @@ antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *con
     	string literalName = (*it)->getText();
 		if (!funcCtxt.top().addEntry(literalName, type)) { 
 			// -> erreur ici ? variable serait déjà déclarée dans le scope 
+			cout << "erreur" << endl;
 		}
 	}	
-
-	cout << funcCtxt.top().get("b") << endl;
 
 	return 0;
 }

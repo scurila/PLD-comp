@@ -63,16 +63,18 @@ antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *c
 
 
 
-antlrcpp::Any visitAssignExpr(ifccParser::AssignExprContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *context) { };
 
-antlrcpp::Any visitOperatorSub(ifccParser::OperatorSubContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) { };
 
-antlrcpp::Any visitOperatorPar(ifccParser::OperatorParContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorPar(ifccParser::OperatorParContext *context) { };
 
-antlrcpp::Any visitOperatorDiv(ifccParser::OperatorDivContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { };
 
-antlrcpp::Any visitOperatorAdd(ifccParser::OperatorAddContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitOperatorAdd(ifccParser::OperatorAddContext *context) { };
 
-antlrcpp::Any visitLiteralExpr(ifccParser::LiteralExprContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *context) { };
 
-antlrcpp::Any visitOperatorMult(ifccParser::OperatorMultContext *context) { };
+antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) { };
+
+antlrcpp::Any CodeGenVisitor::visitOperatorMult(ifccParser::OperatorMultContext *context) { };

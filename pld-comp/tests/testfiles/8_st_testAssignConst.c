@@ -1,5 +1,6 @@
 int main() {
-    int x;
-    x=8;
+    int x,y;
+    y=2;
+    x=y;
     return 0;
 }

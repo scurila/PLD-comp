@@ -51,3 +51,19 @@ antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *c
 {
 	return 0;
 }
+
+
+
+antlrcpp::Any visitAssignExpr(ifccParser::AssignExprContext *context) { };
+
+antlrcpp::Any visitOperatorSub(ifccParser::OperatorSubContext *context) { };
+
+antlrcpp::Any visitOperatorPar(ifccParser::OperatorParContext *context) { };
+
+antlrcpp::Any visitOperatorDiv(ifccParser::OperatorDivContext *context) { };
+
+antlrcpp::Any visitOperatorAdd(ifccParser::OperatorAddContext *context) { };
+
+antlrcpp::Any visitLiteralExpr(ifccParser::LiteralExprContext *context) { };
+
+antlrcpp::Any visitOperatorMult(ifccParser::OperatorMultContext *context) { };

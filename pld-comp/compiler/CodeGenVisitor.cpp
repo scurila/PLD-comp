@@ -25,6 +25,7 @@ antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *con
 			<< "  popq %rbp\n"
 	 		<< "  ret\n";
 */
+std::cout << "# return\n";
 	return 0;
 }
 
@@ -42,66 +43,77 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	}
 */
 	
-	
+	std::cout << "# init var\n";
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *context) 
 {
+	std::cout << "# declare var\n";
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *context)
 {
+	std::cout << "# assign var\n";
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *context)
 {
+	std::cout << "# assign const\n";
 	return 0;
 }
 
 
 antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *context) { 
-	return 0;
+	std::cout << "# assign expr\n";
+	return visitChildren(context);
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) {
+	std::cout << "# sub\n";
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorPar(ifccParser::OperatorParContext *context) {
+	std::cout << "# par\n";
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { 
+	std::cout << "# divide\n";
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorAdd(ifccParser::OperatorAddContext *context) {
+	std::cout << "# add\n";
 	
 	visit(context->children[0]);// pushes result in the stack 
 	visit(context->children[1]);// pushes result in the stack 
 
-	std::cout<<	"popq %ebx\n"//right member
-			<<"popq %eax\n"//left member
-			<< "add %eax, %ebx"
-			<< "pushq %ebx";
+	std::cout<<	"  popq %ebx\n"//right member
+			 << "  popq %eax\n"//left member
+			 << "  add %eax, %ebx\n"
+			 << "  pushq %ebx\n";
 	
 	return 0; 
  }
 
 antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *context) {
+	std::cout << "# literal expr\n";
 	return 0;
  }
 
 antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
+	std::cout << "# const expr\n";
 	/*int val = stoi(ctx->CONST()->getText());
 	std::cout << "pushq $" << val << std::endl;*/
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorMult(ifccParser::OperatorMultContext *context) { 
+	std::cout << "# mult\n";
 	return 0;
 }

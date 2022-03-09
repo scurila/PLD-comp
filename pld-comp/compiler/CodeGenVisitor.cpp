@@ -1,5 +1,8 @@
 #include "CodeGenVisitor.h"
 #include <string>
+#include <stack>
+
+
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {
@@ -9,6 +12,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 			  << "  pushq %rbp\n"
 			  << "  movq %rsp, %rbp\n";
 
+	funcCtxt.push(SymbolTable());
 	return visitChildren(ctx);
 }
 
@@ -29,16 +33,28 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	int cteVal = stoi(context->CONST()->getText());
 	std::string literalName = context->LITERAL()->getText();
 
-	int count = 1;
+	if (funcCtxt.top().addEntry(literalName, context->type()->getText())) { 
+		int count = 1;
+		std::cout
+			<< "  movl $" << cteVal << ", " << (-1 * funcCtxt.top().get(literalName)->bp_offset) << "(%rbp)\n";
+	} else {
+		// -> erreur ici ? variable serait déjà déclarée dans le scope 
+	}
 
-	std::cout
-		<< "  movl $" << cteVal << ", " << (-4 * count) << "(%rbp)\n";
-	
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *context) 
 {
+	std::string type = context->type()->getText();
+	std::vector<antlr4::tree::TerminalNode *> literals = context->LITERAL();
+	for(std::vector<antlr4::tree::TerminalNode *>::iterator it = begin(literals); it != end(literals); ++it) {
+    	string literalName = (*it)->getText();
+		if (!funcCtxt.top().addEntry(literalName, type)) { 
+			// -> erreur ici ? variable serait déjà déclarée dans le scope 
+		}
+	}	
+
 	return 0;
 }
 

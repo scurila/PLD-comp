@@ -3,12 +3,13 @@
 
 #include "antlr4-runtime.h"
 #include "generated/ifccBaseVisitor.h"
+#include "SymbolTable.h"
+#include <stack>
 
 
 class  CodeGenVisitor : public ifccBaseVisitor {
 	public:
 		virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override ;
-
 		
 		virtual antlrcpp::Any visitReturnConst(ifccParser::ReturnConstContext *context) override;
 
@@ -19,5 +20,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 		virtual antlrcpp::Any visitAssignVar(ifccParser::AssignVarContext *context) override;
 
 		virtual antlrcpp::Any visitAssignConst(ifccParser::AssignConstContext *context) override;
+
+		// TEMPORAIRE
+		stack<SymbolTable> funcCtxt;
 };
 

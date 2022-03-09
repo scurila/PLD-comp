@@ -1,5 +1,8 @@
 #include "CodeGenVisitor.h"
 #include <string>
+#include <stack>
+
+
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {
@@ -9,6 +12,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 			  << "  pushq %rbp\n"
 			  << "  movq %rsp, %rbp\n";
 
+	funcCtxt.push(SymbolTable());
 	return visitChildren(ctx);
 }
 
@@ -29,10 +33,15 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	int cteVal = stoi(context->CONST()->getText());
 	std::string literalName = context->LITERAL()->getText();
 
-	int count = 1;
+	if (funcCtxt.top().addEntry(literalName, context->type()->getText(), 4)) { // todo : la taille selon le type
+		int count = 1;
+		std::cout
+			<< "  movl $" << cteVal << ", " << (-1 * funcCtxt.top().get(literalName)->bp_offset) << "(%rbp)\n";
+	} else {
+		// -> erreur ici ? variable serait déjà déclarée dans le scope 
+	}
 
-	std::cout
-		<< "  movl $" << cteVal << ", " << (-4 * count) << "(%rbp)\n";
+	
 	
 	return 0;
 }

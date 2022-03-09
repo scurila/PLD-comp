@@ -3,6 +3,8 @@
 
 #include "antlr4-runtime.h"
 #include "generated/ifccBaseVisitor.h"
+#include "SymbolTable.h"
+#include <stack>
 
 
 class  CodeGenVisitor : public ifccBaseVisitor {
@@ -37,5 +39,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 
 
 		
+		// TEMPORAIRE
+		stack<SymbolTable> funcCtxt;
 };
 

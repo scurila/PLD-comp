@@ -73,6 +73,14 @@ antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *con
 
 antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) {
 	std::cout << "# sub\n";
+
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack 
+
+	std::cout<<	"  popq %rbx\n"//right member
+			 << "  popq %rax\n"//left member
+			 << "  sub %rbx, %rax\n"//substract b from a and stores result in a 
+			 << "  pushq %rax\n";
 	return 0;
 }
 
@@ -83,6 +91,16 @@ antlrcpp::Any CodeGenVisitor::visitOperatorPar(ifccParser::OperatorParContext *c
 
 antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { 
 	std::cout << "# divide\n";
+
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack 
+
+	std::cout<<	"  popq %rbx\n"//right member
+			 << "  popq %rax\n"//left member
+			 << "  idiv %rbx\n"//The idiv instruction divides the contents of the 64-bit integer EDX:EAX by the specified operand value.
+			 << "  pushq %rax\n";//The quotient result of the division is stored into EAX
+
+
 	return 0;
 }
 
@@ -90,12 +108,12 @@ antlrcpp::Any CodeGenVisitor::visitOperatorAdd(ifccParser::OperatorAddContext *c
 	std::cout << "# add\n";
 	
 	visit(context->children[0]);// pushes result in the stack 
-	visit(context->children[1]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack 
 
-	std::cout<<	"  popq %ebx\n"//right member
-			 << "  popq %eax\n"//left member
-			 << "  add %eax, %ebx\n"
-			 << "  pushq %ebx\n";
+	std::cout<<	"  popq %rbx\n"//right member
+			 << "  popq %rax\n"//left member
+			 << "  add %rbx, %rax\n"// add a and b and stores result in a
+			 << "  pushq %rax\n";
 	
 	return 0; 
  }
@@ -115,5 +133,14 @@ antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 
 antlrcpp::Any CodeGenVisitor::visitOperatorMult(ifccParser::OperatorMultContext *context) { 
 	std::cout << "# mult\n";
+
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack 
+
+	std::cout<<	"  popq %rbx\n"//right member
+			 << "  popq %rax\n"//left member
+			 << "  imul %rbx, %rax\n"//signed multiplication between a and b stored in a
+			 << "  pushq %rax\n";
+
 	return 0;
 }

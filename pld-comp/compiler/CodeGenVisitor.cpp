@@ -1,8 +1,7 @@
 #include "CodeGenVisitor.h"
+#include "Exceptions.h"
 #include <string>
 #include <stack>
-
-
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {
@@ -33,14 +32,14 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	int cteVal = stoi(context->CONST()->getText());
 	std::string literalName = context->LITERAL()->getText();
 
-	if (funcCtxt.top().addEntry(literalName, context->type()->getText())) { 
-		int count = 1;
+	try {
+		funcCtxt.top().addEntry(literalName, context->type()->getText());
 		std::cout
 			<< "  movl $" << cteVal << ", " << (-1 * funcCtxt.top().get(literalName)->bp_offset) << "(%rbp)\n";
-	} else {
-		// -> erreur ici ? variable serait déjà déclarée dans le scope 
+	} catch (DeclaredVarException e) {
+		errorMessage(e.message());
+		// todo : return différent ? 
 	}
-
 	return 0;
 }
 
@@ -50,9 +49,11 @@ antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *con
 	std::vector<antlr4::tree::TerminalNode *> literals = context->LITERAL();
 	for(std::vector<antlr4::tree::TerminalNode *>::iterator it = begin(literals); it != end(literals); ++it) {
     	string literalName = (*it)->getText();
-		if (!funcCtxt.top().addEntry(literalName, type)) { 
-			// -> erreur ici ? variable serait déjà déclarée dans le scope 
-			cout << "erreur" << endl;
+		try {
+			funcCtxt.top().addEntry(literalName, type);
+		} catch (DeclaredVarException e) {
+			errorMessage(e.message());
+			// todo : return différent ? 
 		}
 	}	
 
@@ -64,10 +65,15 @@ antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *conte
 	string var1 = context->LITERAL()[0]->getText();
 	string var2 = context->LITERAL()[1]->getText();
 
-	std::cout 
-		<< "  movl	"<< -1* funcCtxt.top().get(var2)->bp_offset <<"(%rbp), " << "(%eax)\n";
-	std::cout
-		<< "  movl	 %eax, " <<  -1*funcCtxt.top().get(var1)->bp_offset <<"(%rbp)\n";	
+	try {
+		std::cout 
+			<< "  movl	"<< -1* funcCtxt.top().get(var2)->bp_offset <<"(%rbp), " << "(%eax)\n";
+		std::cout
+			<< "  movl	 %eax, " <<  -1*funcCtxt.top().get(var1)->bp_offset <<"(%rbp)\n";	
+	} catch (UndeclaredVarException e) {
+		errorMessage(e.message());
+		// todo : return différent ? 
+	}
 	return 0;
 }
 

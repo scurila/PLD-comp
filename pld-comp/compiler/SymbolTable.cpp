@@ -1,8 +1,10 @@
 #include "SymbolTable.h"
+#include "Exceptions.h"
 
 bool SymbolTable::addEntry(string name, string type) {
 	int size = 4;
-	/*for (int i = 0; i < sizeof(VarTypeName)/sizeof(VarTypeName[0]) ; i++) {
+	// todo : tailles selon type
+	/*for (int i = 0; i < sizeof(VarTypeName)/sizeof(VarTypeName[0]) ; i++) { 
 		if (type == VarTypeName[i]) {
 			size = VarTypeSize[i];
 		}
@@ -14,6 +16,7 @@ bool SymbolTable::addEntry(string name, string type) {
         return true; 
 	} else {
 		// la var° a déjà été déclarée dans ce scope
+		throw DeclaredVarException(name);
         return false;
 	}
 }
@@ -21,6 +24,7 @@ bool SymbolTable::addEntry(string name, string type) {
 Entry* SymbolTable::get(string name) {
 	if (table.find(name) == table.end()) {
 		// !!! var utilisée sans être déclarée
+		throw UndeclaredVarException(name);
 		return NULL;
 	} else {
 		return table[name];

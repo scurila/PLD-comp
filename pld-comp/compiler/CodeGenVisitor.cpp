@@ -3,13 +3,20 @@
 #include <string>
 #include <stack>
 
+#define APPLE 1
+
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {
-	std::cout << ".text\n"
-	          << ".globl main\n"
-			  << "main: \n" 
-			  << "  pushq %rbp\n"
-			  << "  movq %rsp, %rbp\n";
+	std::cout << ".text\n";
+	#ifdef APPLE
+		std::cout << ".globl _main\n"
+			  << "_main: \n";
+	#else
+		std::cout << ".globl main\n"
+					<< "main: \n";
+	# endif
+		std::cout << "  pushq %rbp\n"
+			<< "  movq %rsp, %rbp\n";
 
 	funcCtxt.push(SymbolTable());
 	return visitChildren(ctx);

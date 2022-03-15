@@ -21,6 +21,8 @@ import shutil
 import sys
 import subprocess
 
+MACM1 = True
+
 def command(string, logfile=None):
     """execute `string` as a shell command, optionnaly logging stdout+stderr to a file. return exit status.)"""
     if args.verbose:
@@ -170,10 +172,10 @@ for jobname in jobs:
     os.chdir(jobname)
     
     ## Reference compiler = GCC
-    gccstatus=command("gcc -S -o asm-gcc.s input.c", "gcc-compile.txt")
+    gccstatus=command(f"gcc{' -target x86_64-apple-macos10.12' if MACM1 else ''} -S -o asm-gcc.s input.c", "gcc-compile.txt")
     if gccstatus == 0:
         # test-case is a valid program. we should run it
-        gccstatus=command("gcc -o exe-gcc asm-gcc.s", "gcc-link.txt")
+        gccstatus=command(f"gcc{' -target x86_64-apple-macos10.12' if MACM1 else ''} -o exe-gcc asm-gcc.s", "gcc-link.txt")
     if gccstatus == 0: # then both compile and link stage went well
         exegccstatus=command("./exe-gcc", "gcc-execute.txt")
         if args.verbose >=2:
@@ -198,7 +200,7 @@ for jobname in jobs:
         continue
     else:
         ## ifcc accepts to compile valid program -> let's link it
-        ldstatus=command("gcc -o exe-ifcc asm-ifcc.s", "ifcc-link.txt")
+        ldstatus=command(f"gcc{' -target x86_64-apple-macos10.12' if MACM1 else ''}-o exe-ifcc asm-ifcc.s", "ifcc-link.txt")
         if ldstatus:
             print("TEST FAIL (your compiler produces incorrect assembly)")
             if args.verbose:

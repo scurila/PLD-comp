@@ -1,4 +1,5 @@
 #include <unordered_map>
+#include <vector>
 #include <string>
 #include <utility>
 
@@ -10,11 +11,12 @@ const int VarTypeSize[] = { 4, 4 };
 
 class Entry {
     public:
-        Entry(string n, string t, int o, int s) : name(n), type(t), bp_offset(o), size(s) {};
+        Entry(string n, string t, int o, int s) : name(n), type(t), bp_offset(o), size(s), used(false) {};
         string name; 
         string type;
         int bp_offset;
         int size; 
+        bool used; // todo : discuss (used = assigned val or read for now, do two flags initialized & read ?)
 };
 
 class SymbolTable {
@@ -22,6 +24,7 @@ class SymbolTable {
         SymbolTable() : topOffset(0) {};
         bool addEntry(string name, string type);
         Entry* get(string name);
+        vector<string> unusedVars();
         int topOffset;
     protected: 
         unordered_map<string, Entry*> table;

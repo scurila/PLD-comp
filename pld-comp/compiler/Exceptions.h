@@ -6,7 +6,11 @@
 using namespace std;
 
 inline void errorMessage(string msg) {
-    cerr << "\033[1;31m" << msg << "\033[0m" << endl;
+    cerr << "\033[1;31m [E]: " << msg << "\033[0m" << endl;
+}
+
+inline void warningMessage(string msg) {
+    cerr << "\033[1;33m [W]: " << msg << "\033[0m" << endl;
 }
 
 class DeclaredVarException : public exception {

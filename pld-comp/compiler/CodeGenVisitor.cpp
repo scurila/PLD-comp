@@ -19,7 +19,18 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 			<< "  movq %rsp, %rbp\n";
 
 	funcCtxt.push(SymbolTable());
-	return visitChildren(ctx);
+	antlrcpp::Any childrenRes = visitChildren(ctx);
+	// verif stack de la fonction toutes vars utilisées - sinon warning
+	vector<string> unusedVars = funcCtxt.top().unusedVars();
+	if (!unusedVars.empty()) {
+		string msg = "Dans ce contexte, la ou les variables suivantes on été déclarées mais n'ont pas été utilisées : ";
+		for (vector<string>::iterator it=unusedVars.begin(); it!=unusedVars.end(); ++it) {
+			msg.append(*it);
+			if ((it+1) != unusedVars.end()) msg.append(", ");
+		}
+		warningMessage(msg);
+	}
+	return childrenRes;
 }
 
 		

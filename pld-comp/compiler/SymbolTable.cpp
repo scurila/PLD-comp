@@ -28,6 +28,18 @@ Entry* SymbolTable::get(string name) {
 		throw UndeclaredVarException(name);
 		return NULL;
 	} else {
+		table[name]->used = true; // activate used flag
 		return table[name];
 	}
+}
+
+vector<string> SymbolTable::unusedVars() {
+	vector<string> res;
+	for(unordered_map<string, Entry*>::iterator it=table.begin(); it!=table.end(); ++it) {
+		Entry* entry = it->second;
+		if (!entry->used) {
+			res.push_back(entry->name);
+		}
+	}
+	return res;
 }

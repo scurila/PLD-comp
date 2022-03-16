@@ -15,7 +15,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 	// TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
 	std::cout 
 			<< "  movq %rsp, %rax\n"
-			<< "  subq $0x20, %rax\n"
+			<< "  subq $0x100, %rax\n"
 			<< "  movq %rax, %rsp\n";
 	
 	funcCtxt.push(SymbolTable());
@@ -40,7 +40,7 @@ antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *con
 
 	std::cout   // move rsp to pop rbp later
 			<< "  movq %rsp, %rbx\n"
-			<< "  addq $0x20, %rbx\n"
+			<< "  addq $0x100, %rbx\n"
 			<< "  movq %rbx, %rsp\n";
 
 	std::cout  // restore rsp (and remove rbp from stack)

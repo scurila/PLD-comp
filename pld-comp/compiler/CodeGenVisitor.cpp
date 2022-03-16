@@ -1,9 +1,8 @@
 #include "CodeGenVisitor.h"
 #include "Utils.h"
+#include "Exceptions.h"
 #include <string>
 #include <stack>
-
-
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {
@@ -12,6 +11,12 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 			  << "main: \n" 
 			  << "  pushq %rbp\n"
 			  << "  movq %rsp, %rbp\n";
+
+	// TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
+	std::cout 
+			<< "  movq %rsp, %rax\n"
+			<< "  subq $0x20, %rax\n"
+			<< "  movq %rax, %rsp\n";
 	
 	funcCtxt.push(SymbolTable());
 	return visitChildren(ctx);
@@ -29,9 +34,16 @@ antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *con
 
 	visit(context->children[1]); // visit expr
 
-	std::cout << "# return\n";
+	std::cout << "# return expr\n";
 	
-	std::cout << "  popq %rax\n"
+	std::cout << "  popq %rax\n"; // store returned value in rax
+
+	std::cout   // move rsp to pop rbp later
+			<< "  movq %rsp, %rbx\n"
+			<< "  addq $0x20, %rbx\n"
+			<< "  movq %rbx, %rsp\n";
+
+	std::cout  // restore rsp (and remove rbp from stack)
 			  << "  popq %rbp\n"
 			  << "  ret\n";
 
@@ -44,12 +56,13 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	/*int cteVal = stoi(context->CONST()->getText());
 	std::string literalName = context->LITERAL()->getText();
 
-	if (funcCtxt.top().addEntry(literalName, context->type()->getText(), 4)) { // todo : la taille selon le type
-		int count = 1;
+	try {
+		funcCtxt.top().addEntry(literalName, context->type()->getText());
 		std::cout
 			<< "  movl $" << cteVal << ", " << (-1 * funcCtxt.top().get(literalName)->bp_offset) << "(%rbp)\n";
-	} else {
-		// -> erreur ici ? variable serait déjà déclarée dans le scope 
+	} catch (DeclaredVarException e) {
+		errorMessage(e.message());
+		// todo : return différent ? 
 	}
 */
 	
@@ -57,19 +70,23 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	return 0;
 }
 
-std::string currentChainedDeclarationType;
-
 antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *context) 
 {
-	std::cout << "# declare var\n";
-	std::string type = context->type()->children[0]->getText();
-	currentChainedDeclarationType = type;
-
-	visit(context->children[1]);
+	std::string type = context->type()->getText();
+	std::vector<antlr4::tree::TerminalNode *> literals = context->LITERAL();
+	for(std::vector<antlr4::tree::TerminalNode *>::iterator it = begin(literals); it != end(literals); ++it) {
+    	string literalName = (*it)->getText();
+		try {
+			funcCtxt.top().addEntry(literalName, type);
+		} catch (DeclaredVarException e) {
+			errorMessage(e.message());
+			// todo : return différent ? 
+		}
+	}	
 
 	return 0;
 }
-
+/*
 antlrcpp::Any CodeGenVisitor::visitLiterallist(ifccParser::LiterallistContext *context) 
 {
 	std::cout << "# literal list element\n";
@@ -79,17 +96,38 @@ antlrcpp::Any CodeGenVisitor::visitLiterallist(ifccParser::LiterallistContext *c
 	funcCtxt.top().addEntry(literalName, currentChainedDeclarationType, typeSize(currentChainedDeclarationType));
 
 	return visitChildren(context);
-}
+}*/
 
 antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *context)
 {
 	std::cout << "# assign var\n";
+	
+	string var1 = context->LITERAL()[0]->getText();
+	string var2 = context->LITERAL()[1]->getText();
+
+	try {
+		std::cout 
+			<< "  movl	"<< -1* funcCtxt.top().get(var2)->bp_offset <<"(%rbp), " << "(%eax)\n";
+		std::cout
+			<< "  movl	 %eax, " <<  -1*funcCtxt.top().get(var1)->bp_offset <<"(%rbp)\n";	
+	} catch (UndeclaredVarException e) {
+		errorMessage(e.message());
+		// todo : return différent ? 
+	}
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *context)
 {
 	std::cout << "# assign const\n";
+	
+	try {
+		int index = funcCtxt.top().get(context->LITERAL()->getText())->bp_offset;
+		std::cout
+			<< "  movl $0x" << std::hex << stoi(context->CONST()->getText()) << std::dec << ", "<< -1*index <<"(%rbp)\n";	
+	} catch (UndeclaredVarException e) {
+		errorMessage(e.message());
+	}
 	return 0;
 }
 
@@ -179,10 +217,10 @@ antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorMult(ifccParser::OperatorMultContext *context) { 
-	std::cout << "# mult\n";
-
 	visit(context->children[0]);// pushes result in the stack 
 	visit(context->children[2]);// pushes result in the stack 
+
+	std::cout << "# mult\n";
 
 	std::cout<<	"  popq %rbx\n"//right member
 			 << "  popq %rax\n"//left member

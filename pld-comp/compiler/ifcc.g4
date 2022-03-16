@@ -9,7 +9,7 @@ instrlist: ( instr ';' instrlist )
 
 instr: RETURN expr   # ReturnExpr
      | type LITERAL '=' CONST  # InitVarConst
-     | type literallist  # DeclareVar
+     | type LITERAL (',' LITERAL)*  # DeclareVar
      | LITERAL '=' LITERAL # AssignVar
      | LITERAL '=' CONST   # AssignConst
      | LITERAL '=' expr # AssignExpr
@@ -24,7 +24,7 @@ expr:  expr '*' expr # OperatorMult
      | '(' expr ')' # OperatorPar
 ;
 
-literallist: LITERAL ',' literallist | LITERAL ;
+/* literallist: LITERAL ',' literallist | LITERAL ; */
 
 type : 'char' | 'int' ;
 

@@ -1,4 +1,5 @@
 generated/
 build/
+demo/
 *.out
 ifcc

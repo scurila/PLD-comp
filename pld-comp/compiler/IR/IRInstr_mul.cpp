@@ -1,0 +1,14 @@
+#include "IRInstr_mul.h"
+
+void IRInstr_div::gen_x86 (ostream &o) {
+    o   << "# mult\n";
+
+    o   <<	"  popq %rbx\n"//right member
+        << "  popq %rax\n"//left member
+        << "  imul %rbx, %rax\n"//signed multiplication between a and b stored in a
+        << "  pushq %rax\n";
+}
+
+void IRInstr_div::gen_arm (ostream &o) {
+
+}

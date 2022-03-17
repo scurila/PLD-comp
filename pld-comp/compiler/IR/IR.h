@@ -7,7 +7,7 @@
 #include <initializer_list>
 
 // Declarations from the parser -- replace with your own
-#include "SymbolTable.h"
+#include "../SymbolTable.h"
 
 class BasicBlock;
 class CFG;
@@ -37,7 +37,7 @@ public:
 	} Operation;
 
 	/**  constructor */
-	IRInstr(BasicBlock *bb_, Operation op, Type t);
+	IRInstr(BasicBlock *bb_, Operation op, VarTypes t);
 
 	/** Actual code generation */
 	void gen_asm(ostream &o, bool x86); /** ARM generation wrapper (calls x86 or arm generator based on flag) */
@@ -48,6 +48,8 @@ private:
 	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
 	VarTypes t;
+
+	SymbolTable * const symbolTable() const;
 };
 
 /**  The class for a basic block */
@@ -82,7 +84,7 @@ public:
 	BasicBlock(CFG *cfg, string entry_label);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
-	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
+	void add_IRInstr(IRInstr::Operation op, VarTypes t, vector<string> params);
 
 	// No encapsulation whatsoever here. Feel free to do better.
 	BasicBlock *exit_true;	  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
@@ -118,17 +120,17 @@ public:
 	void gen_asm_epilogue(ostream &o);
 
 	// symbol table methods
-	void add_to_symbol_table(string name, Type t);
-	string create_new_tempvar(Type t);
+	void add_to_symbol_table(string name, VarTypes t);
+	string create_new_tempvar(VarTypes t);
 	int get_var_index(string name);
-	Type get_var_type(string name);
+	VarTypes get_var_type(string name);
 
 	// basic block management
 	string new_BB_name();
 	BasicBlock *current_bb;
+	SymbolTable *symbolTable;
 
 protected:
-	SymbolTable symbolTable;
 
 	int nextBBnumber;			  /**< just for naming */
 

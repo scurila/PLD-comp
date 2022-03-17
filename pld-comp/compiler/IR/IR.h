@@ -38,7 +38,9 @@ public:
 	IRInstr(BasicBlock *bb_, Operation op, Type t, vector<string> params);
 
 	/** Actual code generation */
-	void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+	void gen_asm(ostream &o, bool x86); /** ARM generation wrapper (calls x86 or arm generator based on flag) */
+	void gen_x86(ostream &o); /** < x86 assembly code generation for this IR instruction */
+	void gen_arm(ostream &o); /** < M1 ARM assembly code generation for this IR instruction */
 
 private:
 	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */

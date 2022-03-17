@@ -1,6 +1,7 @@
 #include "CodeGenVisitor.h"
 #include "Utils.h"
 #include "Exceptions.h"
+#include "IR/instr.h"
 #include <string>
 #include <stack>
 
@@ -228,10 +229,9 @@ antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *c
 
 antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
-
-
 	std::cout << "# const expr\n";
 	int val = stoi(ctx->CONST()->getText());
+	cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb, val));
 	std::cout << "  pushq $0x" << std::hex << val << std::dec << std::endl;  // converted to hex to handle negative values (but grammar does not handle it so it is untested for now)
 	return 0;
 }

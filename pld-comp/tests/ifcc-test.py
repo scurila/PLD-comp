@@ -200,7 +200,7 @@ for jobname in jobs:
         continue
     else:
         ## ifcc accepts to compile valid program -> let's link it
-        ldstatus=command(f"gcc{' -target x86_64-apple-macos10.12' if MACM1 else ''}-o exe-ifcc asm-ifcc.s", "ifcc-link.txt")
+        ldstatus=command(f"gcc{' -target x86_64-apple-macos10.12' if MACM1 else ''} -o exe-ifcc asm-ifcc.s", "ifcc-link.txt")
         if ldstatus:
             print("TEST FAIL (your compiler produces incorrect assembly)")
             if args.verbose:

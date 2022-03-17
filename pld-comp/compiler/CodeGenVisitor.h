@@ -11,6 +11,8 @@
 class  CodeGenVisitor : public ifccBaseVisitor {
 	public:
 
+        CodeGenVisitor(CFG cfg):cfg(cfg){};
+
 		virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override ;
 		
 		virtual antlrcpp::Any visitReturnExpr(ifccParser::ReturnExprContext *context) override;
@@ -45,5 +47,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 		
 		// TEMPORAIRE
 		stack<SymbolTable> funcCtxt;
+
+		CFG cfg;
 };
 

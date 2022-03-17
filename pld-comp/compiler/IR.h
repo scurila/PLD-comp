@@ -12,15 +12,15 @@
 
 class BasicBlock;
 class CFG;
-class DefFonction;
-
 
 //! The class for one 3-address instruction
-class IRInstr {
- 
-   public:
+class IRInstr
+{
+
+public:
 	/** The instructions themselves -- feel free to subclass instead */
-	typedef enum {
+	typedef enum
+	{
 		ldconst,
 		copy,
 		add,
@@ -28,31 +28,25 @@ class IRInstr {
 		mul,
 		rmem,
 		wmem,
-		call, 
+		call,
 		cmp_eq,
 		cmp_lt,
 		cmp_le
 	} Operation;
 
-
 	/**  constructor */
-	IRInstr(BasicBlock* bb_, Operation op, Type t, vector<string> params);
-	
+	IRInstr(BasicBlock *bb_, Operation op, Type t, vector<string> params);
+
 	/** Actual code generation */
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
-	
- private:
-	BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
+
+private:
+	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
 	Type t;
 	vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */
-	// if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design. 
+						   // if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design.
 };
-
-
-
-
-
 
 /**  The class for a basic block */
 
@@ -80,28 +74,24 @@ Possible optimization:
        followed by a conditional jump to the exit_false branch
 */
 
-class BasicBlock {
- public:
-	BasicBlock(CFG* cfg, string entry_label);
+class BasicBlock
+{
+public:
+	BasicBlock(CFG *cfg, string entry_label);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
 	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
 
 	// No encapsulation whatsoever here. Feel free to do better.
-	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */ 
-	BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
-	string label; /**< label of the BB, also will be the label in the generated code */
-	CFG* cfg; /** < the CFG where this block belongs */
-	vector<IRInstr*> instrs; /** < the instructions themselves. */
-  string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
+	BasicBlock *exit_true;	  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
+	BasicBlock *exit_false;	  /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
+	string label;			  /**< label of the BB, also will be the label in the generated code */
+	CFG *cfg;				  /** < the CFG where this block belongs */
+	vector<IRInstr *> instrs; /** < the instructions themselves. */
+	string test_var_name;	  /** < when generating IR code for an if(expr) or while(expr) etc,
 													 store here the name of the variable that holds the value of expr */
- protected:
-
- 
+protected:
 };
-
-
-
 
 /** The class for the control flow graph, also includes the symbol table */
 
@@ -112,19 +102,18 @@ class BasicBlock {
      (again it could be identified in a more explicit way)
 
  */
-class CFG {
- public:
-	CFG(DefFonction* ast);
+class CFG
+{
+public:
+	CFG() {}
 
-	DefFonction* ast; /**< The AST this CFG comes from */
-	
-	void add_bb(BasicBlock* bb); 
+	void add_bb(BasicBlock *bb);
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
-	void gen_asm(ostream& o);
+	void gen_asm(ostream &o);
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
-	void gen_asm_prologue(ostream& o);
-	void gen_asm_epilogue(ostream& o);
+	void gen_asm_prologue(ostream &o);
+	void gen_asm_epilogue(ostream &o);
 
 	// symbol table methods
 	void add_to_symbol_table(string name, Type t);
@@ -134,16 +123,15 @@ class CFG {
 
 	// basic block management
 	string new_BB_name();
-	BasicBlock* current_bb;
+	BasicBlock *current_bb;
 
- protected:
-	map <string, Type> SymbolType; /**< part of the symbol table  */
-	map <string, int> SymbolIndex; /**< part of the symbol table  */
-	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
-	int nextBBnumber; /**< just for naming */
-	
-	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+protected:
+	map<string, Type> SymbolType; /**< part of the symbol table  */
+	map<string, int> SymbolIndex; /**< part of the symbol table  */
+	int nextFreeSymbolIndex;	  /**< to allocate new symbols in the symbol table */
+	int nextBBnumber;			  /**< just for naming */
+
+	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 };
-
 
 #endif

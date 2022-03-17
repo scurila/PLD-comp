@@ -26,12 +26,15 @@ public:
 		add,
 		sub,
 		mul,
+		div,
 		rmem,
 		wmem,
 		call,
 		cmp_eq,
 		cmp_lt,
-		cmp_le
+		cmp_le,
+		pushvar,
+		pushconst
 	} Operation;
 
 	/**  constructor */

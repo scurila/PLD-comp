@@ -2,7 +2,7 @@
 
 #include "IR.h"
 
-class IRInstr_div.h : IRInstr {
+class IRInstr_div : IRInstr {
     public:
             IRInstr_div(BasicBlock *bb_, Operation op, string t): IRInstr(BasicBlock *bb_, Operation op, string t){};
 

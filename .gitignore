@@ -3,3 +3,5 @@
 pld-comp/compiler/ifcc
 pld-comp/antlr
 
+*.xml
+*.iml

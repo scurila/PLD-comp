@@ -7,8 +7,7 @@
 #include <initializer_list>
 
 // Declarations from the parser -- replace with your own
-#include "type.h"
-#include "symbole.h"
+#include "SymbolTable.h"
 
 class BasicBlock;
 class CFG;
@@ -48,7 +47,7 @@ public:
 private:
 	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
-	Type t;
+	VarTypes t;
 };
 
 /**  The class for a basic block */
@@ -129,9 +128,8 @@ public:
 	BasicBlock *current_bb;
 
 protected:
-	map<string, Type> SymbolType; /**< part of the symbol table  */
-	map<string, int> SymbolIndex; /**< part of the symbol table  */
-	int nextFreeSymbolIndex;	  /**< to allocate new symbols in the symbol table */
+	SymbolTable symbolTable;
+
 	int nextBBnumber;			  /**< just for naming */
 
 	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/

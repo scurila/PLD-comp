@@ -84,7 +84,7 @@ public:
 	BasicBlock(CFG *cfg, string entry_label);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
-	void add_IRInstr(IRInstr::Operation op, string type, vector<string> params);
+	void add_IRInstr(IRInstr instr);
 
 	// No encapsulation whatsoever here. Feel free to do better.
 	BasicBlock *exit_true;	  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
@@ -109,7 +109,11 @@ protected:
 class CFG
 {
 public:
-	CFG() {}
+	CFG() {
+		current_bb = new BasicBlock(this, ".L0");
+		nextBBnumber = 1;
+		symbolTable = new SymbolTable();
+	}
 
 	void add_bb(BasicBlock *bb);
 

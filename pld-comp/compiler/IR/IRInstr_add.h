@@ -3,8 +3,8 @@
 
 class IRInstr_add : IRInstr {
     public:
-        IRInstr_add(BasicBlock *bb_, Operation op, Type t, string v1, string v2, string v3) : IRInstr(BasicBlock *bb_, Operation op, Type t), var1(v1), var2(v2), var3(v3) {} ;
+        IRInstr_add(BasicBlock *bb_, Operation op, Type t, string v1, string v2, string v3) : IRInstr(BasicBlock *bb_, Operation op, Type t) {} ;
 
-        // add var1 var2 var3 ≣ var1 = var2 + var3
-        string var1, var2, var3; 
+        virtual void gen_x86(ostream &o); /** < x86 assembly code generation for this IR instruction */
+	    virtual void gen_arm(ostream &o); /** < M1 ARM assembly code generation for this IR instruction */
 }

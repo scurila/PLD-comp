@@ -44,7 +44,7 @@ public:
 	virtual void gen_x86(ostream &o) = 0; /** < x86 assembly code generation for this IR instruction */
 	virtual void gen_arm(ostream &o) = 0; /** < M1 ARM assembly code generation for this IR instruction */
 
-private:
+protected:
 	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
 	VarTypes t;

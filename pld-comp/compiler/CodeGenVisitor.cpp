@@ -4,7 +4,7 @@
 #include <string>
 #include <stack>
 
-#define APPLE 1
+#define APPLE 0
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {

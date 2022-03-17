@@ -4,7 +4,7 @@
 #include "antlr4-runtime.h"
 #include "generated/ifccBaseVisitor.h"
 #include "SymbolTable.h"
-#include "IR.h"
+#include "IR/IR.h"
 #include <stack>
 
 

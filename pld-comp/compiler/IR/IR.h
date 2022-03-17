@@ -37,7 +37,7 @@ public:
 	} Operation;
 
 	/**  constructor */
-	IRInstr(BasicBlock *bb_, Operation op, VarTypes t);
+	IRInstr(BasicBlock *bb_, Operation op, string t);
 
 	/** Actual code generation */
 	void gen_asm(ostream &o, bool x86); /** ARM generation wrapper (calls x86 or arm generator based on flag) */

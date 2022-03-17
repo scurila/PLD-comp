@@ -1,6 +1,6 @@
 #include "IRInstr_mul.h"
 
-void IRInstr_div::gen_x86 (ostream &o) {
+void IRInstr_mul::gen_x86 (ostream &o) {
     o   << "# mult\n";
 
     o   <<	"  popq %rbx\n"//right member
@@ -9,6 +9,6 @@ void IRInstr_div::gen_x86 (ostream &o) {
         << "  pushq %rax\n";
 }
 
-void IRInstr_div::gen_arm (ostream &o) {
+void IRInstr_mul::gen_arm (ostream &o) {
 
 }

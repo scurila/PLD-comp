@@ -44,10 +44,10 @@ public:
 	virtual void gen_x86(ostream &o) = 0; /** < x86 assembly code generation for this IR instruction */
 	virtual void gen_arm(ostream &o) = 0; /** < M1 ARM assembly code generation for this IR instruction */
 
-private:
+protected:
 	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
-	VarTypes t;
+	string type;
 
 	SymbolTable * const symbolTable() const;
 };
@@ -84,7 +84,7 @@ public:
 	BasicBlock(CFG *cfg, string entry_label);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
-	void add_IRInstr(IRInstr::Operation op, VarTypes t, vector<string> params);
+	void add_IRInstr(IRInstr::Operation op, string type, vector<string> params);
 
 	// No encapsulation whatsoever here. Feel free to do better.
 	BasicBlock *exit_true;	  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
@@ -120,10 +120,10 @@ public:
 	void gen_asm_epilogue(ostream &o);
 
 	// symbol table methods
-	void add_to_symbol_table(string name, VarTypes t);
-	string create_new_tempvar(VarTypes t);
+	void add_to_symbol_table(string name, string type);
+	string create_new_tempvar(string type);
 	int get_var_index(string name);
-	VarTypes get_var_type(string name);
+	string get_var_type(string name);
 
 	// basic block management
 	string new_BB_name();

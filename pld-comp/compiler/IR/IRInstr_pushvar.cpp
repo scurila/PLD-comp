@@ -5,10 +5,9 @@
 void IRInstr_pushvar::gen_x86(ostream &o)
 {
     std::string mov = makeInstrSuffix_x86("mov", variable->type);
-    std::string bp = makeRegisterName_x86("bp", variable->type);
     std::string ax = makeRegisterName_x86("ax", variable->type);
 
-    o << "  " << mov << " " << -variable->bp_offset << "(" << bp << "), " << ax << "\n"
+    o << "  " << mov << " " << -variable->bp_offset << "(%rbp), " << ax << "\n"
       << "  pushq %rax\n";
 }
 

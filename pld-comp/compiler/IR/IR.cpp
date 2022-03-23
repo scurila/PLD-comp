@@ -47,7 +47,7 @@ void CFG::gen_x86_prologue(ostream &o){
     #else
     	o   << ".globl main\n"
     					<< "main: \n";
-    # endif
+    #endif
     o   << "  pushq %rbp\n"
         << "  movq %rsp, %rbp\n";
 
@@ -59,6 +59,8 @@ void CFG::gen_x86_prologue(ostream &o){
 }
 
 void CFG::gen_x86_epilogue(ostream &o){
+    o  << "  popq %rax\n";  // pop returned value to rax
+
 	o   // move rsp to pop rbp later
 		<< "  movq %rsp, %rbx\n"
 		<< "  addq $0x100, %rbx\n"

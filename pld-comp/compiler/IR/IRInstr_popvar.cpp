@@ -5,11 +5,10 @@
 void IRInstr_popvar::gen_x86(ostream &o)
 {
     std::string mov = makeInstrSuffix_x86("mov", variable->type);
-    std::string bp = makeRegisterName_x86("bp", variable->type);
     std::string ax = makeRegisterName_x86("ax", variable->type);
 
     o << "  popq %rax\n"
-      << "  " << mov << " " << ax << ", " << -variable->bp_offset << "(" << bp << ")\n";
+      << "  " << mov << " " << ax << ", " << -variable->bp_offset << "(%rbp)\n";
 }
 
 void IRInstr_popvar::gen_arm(ostream &o)

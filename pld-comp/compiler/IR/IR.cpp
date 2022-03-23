@@ -77,6 +77,7 @@ void CFG::add_to_symbol_table(string name, string type){
 string CFG::create_new_tempvar(string type){
     string tmpName = "tmp"+std::to_string(nbTmpVar);
     symbolTable->addEntry(tmpName, type);
+    nbTmpVar++;
     return tmpName;
 }
 
@@ -88,6 +89,13 @@ string CFG::create_new_tempvar(string type){
 string CFG::get_var_type(string name){
      return symbolTable->get(name)->type;
 
+}
+
+// basic block management
+string CFG::new_BB_name(){
+    string name = ".L"+std::to_string(nextBBnumber);
+    nextBBnumber++;//est-ce qu'on le fait ici ??
+    return name;
 }
 
 

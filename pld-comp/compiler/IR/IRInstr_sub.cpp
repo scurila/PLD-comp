@@ -11,8 +11,8 @@ void IRInstr_sub::gen_x86(ostream &o){
 
 void IRInstr_sub::gen_arm (ostream &o){
     o << "; -- sub \n";
-    o << "  pop {w8}\n" // right member
-	<< "   pop {w9}\n" // left member 
-	<< "   sub w9, w9, w8\n"
-	<< "   push {w9}\n";
+    o << "pop {w8}\n" // right member
+	<< "pop {w9}\n" // left member 
+	<< "sub w9, w9, w8\n"
+	<< "push {w9}\n";
 }

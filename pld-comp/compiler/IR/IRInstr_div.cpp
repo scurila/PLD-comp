@@ -13,8 +13,8 @@ void IRInstr_div::gen_x86 (ostream &o) {
 void IRInstr_div::gen_arm (ostream &o) {
     o << "; -- divide\n";
 
-    o << "  pop {w8}\n" // right member
-	<< "   pop {w9}\n" // left member 
-	<< "   sdiv w9, w9, w8\n"
-	<< "   push {w9}\n";
+    o << "pop {w8}\n" // right member
+	<< "pop {w9}\n" // left member 
+	<< "sdiv w9, w9, w8\n"
+	<< "push {w9}\n";
 }

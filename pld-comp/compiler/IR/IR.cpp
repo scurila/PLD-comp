@@ -116,10 +116,11 @@ void CFG::gen_arm_prologue(ostream &o){
 void CFG::gen_arm_epilogue(ostream &o){
 	o
     // todo : 100 temp
-		<< "  add     sp, sp, #100\n"
-		<< "  ret\n"
-		<< "  .cfi_endproc\n"
-        << "  .subsections_via_symbols\n";
+        << "pop {w0}\n"
+		<< "add sp, sp, #100\n"
+		<< "ret\n"
+		<< ".cfi_endproc\n"
+        << ".subsections_via_symbols\n";
 }
 
 void CFG::add_to_symbol_table(string name, string type){

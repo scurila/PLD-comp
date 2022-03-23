@@ -147,9 +147,11 @@ antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *c
 	std::cout << "# assign const\n";
 	
 	try {
-		int index = funcCtxt.top().get(context->LITERAL()->getText())->bp_offset;
+		std::string literal = context->LITERAL()->getText();
+		int index = funcCtxt.top().get(literal)->bp_offset;
 		std::cout
 			<< "  movl $0x" << std::hex << stoi(context->CONST()->getText()) << std::dec << ", "<< -1*index <<"(%rbp)\n";
+		cfg->current_bb->add_IRInstr(new IRInstr_ldconst(cfg->current_bb, literal, stoi(context->CONST()->getText())));
 
 	} catch (UndeclaredVarException e) {
 		errorMessage(e.message());

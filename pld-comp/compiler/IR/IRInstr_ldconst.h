@@ -5,7 +5,7 @@
 class IRInstr_ldconst : public IRInstr
 {
 public:
-    IRInstr_popvar(BasicBlock *bb, std::string variableName, int64_t value) : IRInstr(bb, ldconst, ""), value(value) {
+    IRInstr_ldconst(BasicBlock *bb, std::string variableName, int64_t value) : IRInstr(bb, ldconst, ""), value(value) {
         variable = symbolTable()->get(variableName);
         type = variable->type;
     }

@@ -74,7 +74,7 @@ void CFG::gen_x86_prologue(ostream &o){
     	    << "_main: \n";
     #else
     	o   << ".globl main\n"
-    					<< "main: \n";
+            << "main: \n";
     #endif
     o   << "  pushq %rbp\n"
         << "  movq %rsp, %rbp\n";

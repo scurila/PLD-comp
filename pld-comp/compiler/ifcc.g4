@@ -33,7 +33,9 @@ RETURN : 'return' ;
 CONST : [0-9]+ ;
 LITERAL: [a-zA-Z]+ ;
 
-COMMENT : '/*' .*? '*/' -> skip ;
+ML_COMMENT : '/*' .*? '*/' -> skip ;
+SL_COMMENT : '//' .*? '\n' -> skip ;
+DOC_COMMENT : '/**' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
-WS    : [ \t\r\n] -> channel(HIDDEN);
+WS    : [ \t\r\n] -> channel(HIDDEN) ;
 

@@ -27,12 +27,7 @@ antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *con
 {
 	visit(context->children[1]); // visit expr
 
-
-	std::cout << "IR generated code below!" << std::endl;
-
-	cfg->gen_x86_prologue(std::cout);
-	cfg->gen_asm(std::cout, x86);
-	cfg->gen_x86_epilogue(std::cout);
+	// TODO ? for now, handling of returned value is made through the stack (last element pushed), and read in the epilogue
 
 	return 0;
 }
@@ -52,7 +47,7 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	}
 */
 	
-	std::cout << "# init var\n";
+	std::cout << "# init var\n";  // TODO is it still useful ?
 	return 0;
 }
 

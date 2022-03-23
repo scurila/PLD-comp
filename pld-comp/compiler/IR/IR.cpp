@@ -101,16 +101,6 @@ void BasicBlock::gen_asm(ostream &o, Arch arch)
     }
 }
 
-void BasicBlock::gen_x86(ostream &o) /**< x86 assembly code generation for this basic block (very simple) */
-{
-
-}
-
-void BasicBlock::gen_arm(ostream &o) /**< x86 assembly code generation for this basic block (very simple) */
-{
-    
-}
-
 void BasicBlock::add_IRInstr(IRInstr *instr)
 {
     instrs.push_back(instr);

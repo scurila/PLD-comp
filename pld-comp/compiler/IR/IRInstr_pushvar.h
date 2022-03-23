@@ -2,7 +2,7 @@
 
 #include "IR.h"
 
-class IRInstr_pushvar : IRInstr
+class IRInstr_pushvar : public IRInstr
 {
 public:
     IRInstr_pushvar(BasicBlock *bb, std::string variableName) : IRInstr(bb, pushvar, "") {

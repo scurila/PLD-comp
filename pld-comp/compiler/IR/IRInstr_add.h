@@ -3,7 +3,7 @@
 #include "IR.h"
 #include <string>
 
-class IRInstr_add : IRInstr {
+class IRInstr_add : public IRInstr {
     public:
         IRInstr_add(BasicBlock *bb_) : IRInstr(bb_, add, "") {};
         

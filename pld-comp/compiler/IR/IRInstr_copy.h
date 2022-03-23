@@ -1,7 +1,7 @@
 #include "IR.h"
 #include <string>
 
-class IRInstr_copy : IRInstr {
+class IRInstr_copy : public IRInstr {
     public:
         IRInstr_copy(BasicBlock *bb_, string d, string v) : IRInstr(bb_, copy, ""), dest(d), val(v) {};
         

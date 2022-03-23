@@ -2,7 +2,7 @@
 
 #include "IR.h"
 
-class IRInstr_mul : IRInstr {
+class IRInstr_mul : public IRInstr {
     public:
 
             IRInstr_mul(BasicBlock *bb_): IRInstr(bb_, mul, ""){};

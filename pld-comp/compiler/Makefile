@@ -16,13 +16,13 @@ SOURCES=$(wildcard IR/*.cpp)
 OBJECTS=build/main.o build/SymbolTable.o build/CodeGenVisitor.o build/ifccBaseVisitor.o build/ifccLexer.o build/ifccVisitor.o build/ifccParser.o build/Utils.o $(SOURCES:%.cpp=build/%.o)
 
 ifcc: $(OBJECTS)
-	@mkdir -p build
+	@mkdir -p build/IR
 	$(CC) $(LDFLAGS) build/*.o build/**/*.o $(ANTLRLIB) -o ifcc
 
 ##########################################
 # compile our hand-writen C++ code: main(), CodeGenVisitor, etc.
 build/%.o: %.cpp generated/ifccParser.cpp
-	@mkdir -p build
+	@mkdir -p build/IR
 	$(CC) $(CCFLAGS) -MMD -o $@ $< 
 
 build/IR/%.o: IR/%.cpp generated/ifccParser.cpp
@@ -32,7 +32,7 @@ build/IR/%.o: IR/%.cpp generated/ifccParser.cpp
 ##########################################
 # compile all the antlr-generated C++
 build/%.o: generated/%.cpp
-	@mkdir -p build
+	@mkdir -p build/IR
 	$(CC) $(CCFLAGS) -MMD -o $@ $< 
 
 # automagic dependency management: `gcc -MMD` generates all the .d files for us
@@ -56,7 +56,7 @@ generated/ifcc%.cpp: ifcc.g4
 FILE ?= ../tests/testfiles/1_return42.c
 
 gui:
-	@mkdir -p generated build
+	@mkdir -p generated build  build/IR
 	java -cp $(ANTLRJAR) org.antlr.v4.Tool -Dlanguage=Java -o generated ifcc.g4
 	javac -cp $(ANTLRJAR) -d build generated/*.java
 	java -cp $(ANTLRJAR):build org.antlr.v4.gui.TestRig ifcc axiom -gui $(FILE)

@@ -1,6 +1,8 @@
 #include "IRInstr_copy.h"
 #include "../Exceptions.h"
 
+// TODO does not handle dynamic type sizes (only int for now)
+
 void IRInstr_copy::gen_x86(ostream &o) {
     o << "# copy\n";
     try {

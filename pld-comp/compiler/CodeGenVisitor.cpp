@@ -131,10 +131,11 @@ antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *conte
 	string var2 = context->LITERAL()[1]->getText();
 
 	try {
+	    cfg->current_bb->add_IRInstr(new IRInstr_copy(cfg->current_bb, var1, var2));
 		std::cout 
 			<< "  movl	"<< -1* funcCtxt.top().get(var2)->bp_offset <<"(%rbp), " << "(%eax)\n";
 		std::cout
-			<< "  movl	 %eax, " <<  -1*funcCtxt.top().get(var1)->bp_offset <<"(%rbp)\n";	
+			<< "  movl	 %eax, " <<  -1*funcCtxt.top().get(var1)->bp_offset <<"(%rbp)\n";
 	} catch (UndeclaredVarException e) {
 		errorMessage(e.message());
 		// todo : return différent ? 

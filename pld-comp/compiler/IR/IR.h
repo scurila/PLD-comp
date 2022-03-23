@@ -90,8 +90,6 @@ public:
 	BasicBlock(CFG *cfg, string entry_label): cfg(cfg), label(entry_label) {}
 	
 	void gen_asm(ostream &o, Arch arch); 
-	void gen_x86(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
-    void gen_arm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
 	void add_IRInstr(IRInstr *instr);
 

@@ -66,7 +66,12 @@ antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *con
 			  << "  popq %rbp\n"
 			  << "  ret\n";
 
-	
+	std::cout << "IR generated code below!" << std::endl;
+
+	cfg->gen_x86_prologue(std::cout);
+	cfg->gen_asm(std::cout, x86);
+	cfg->gen_x86_epilogue(std::cout);
+
 	return 0;
 }
 

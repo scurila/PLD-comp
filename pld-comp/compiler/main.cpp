@@ -28,6 +28,9 @@ int main(int argn, const char **argv)
         exit(1);
     }
 
+    Arch selectedArch = x86;
+
+
     ANTLRInputStream input(in.str());
 
     ifccLexer lexer(&input);
@@ -48,9 +51,9 @@ int main(int argn, const char **argv)
     CodeGenVisitor v(main_cfg);
     v.visit(tree);
 
-	main_cfg->gen_prologue(std::cout, arm);
-	main_cfg->gen_asm(std::cout, arm);
-	main_cfg->gen_epilogue(std::cout, arm);
+	main_cfg->gen_prologue(std::cout, selectedArch);
+	main_cfg->gen_asm(std::cout, selectedArch);
+	main_cfg->gen_epilogue(std::cout, selectedArch);
 
     return 0;
 }

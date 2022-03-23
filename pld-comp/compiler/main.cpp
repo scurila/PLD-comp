@@ -49,7 +49,7 @@ int main(int argn, const char **argv)
     v.visit(tree);
 
 	main_cfg->gen_x86_prologue(std::cout);
-	main_cfg->gen_asm(std::cout, x86);
+	main_cfg->gen_asm(std::cout, arm);
 	main_cfg->gen_x86_epilogue(std::cout);
 
     return 0;

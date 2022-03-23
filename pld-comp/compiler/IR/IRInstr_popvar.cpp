@@ -14,5 +14,5 @@ void IRInstr_popvar::gen_x86(ostream &o)
 void IRInstr_popvar::gen_arm(ostream &o)
 {
     o << " pop {w8}\n"
-      << " mov [sp, #" << -variable->bp_offset << "], w8\n";
+      << " mov [sp, #" << variable->bp_offset << "], w8\n";
 }

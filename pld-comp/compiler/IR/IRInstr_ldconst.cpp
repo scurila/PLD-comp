@@ -27,6 +27,7 @@ void IRInstr_ldconst::gen_x86(ostream &o)
 }
 
 void IRInstr_ldconst::gen_arm(ostream &o)
-{
-
+{  
+    o << "  mov w8, #" << value << "\n"
+    << "    str w8, [sp, #" << variable->bp_offset << "]\n"; 
 }

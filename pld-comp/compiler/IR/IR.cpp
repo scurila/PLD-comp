@@ -85,6 +85,29 @@ void CFG::gen_x86_epilogue(ostream &o){
 		<< "  ret\n";
 }
 
+void CFG::gen_arm_prologue(ostream &o){
+    o << ".section	__TEXT,__text,regular,pure_instructions\n";
+    o   << ".build_version macos, 12, 0	sdk_version 12, 3\n"
+        << ".globl	_main                           ; -- Begin function main\n"
+        << ".p2align	2\n"
+        << "_main:                                  ; @main\n"
+        << ".cfi_startproc\n"
+        << "; %bb.0:\n"
+        // TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
+        << "sub	sp, sp, #100\n"
+        << ".cfi_def_cfa_offset 100\n";
+        // todo : change when functions supported
+}
+
+void CFG::gen_arm_epilogue(ostream &o){
+	o
+    // todo : 100 temp
+		<< "  add     sp, sp, #100\n"
+		<< "  ret\n"
+		<< "  .cfi_endproc\n"
+        << "  .subsections_via_symbols\n";
+}
+
 void CFG::add_to_symbol_table(string name, string type){
     symbolTable->addEntry(name, type);
 }

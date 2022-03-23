@@ -102,6 +102,7 @@ antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *con
     	string literalName = (*it)->getText();
 		try {
 			funcCtxt.top().addEntry(literalName, type);
+			cfg->symbolTable->addEntry(literalName, type);
 		} catch (DeclaredVarException e) {
 			errorMessage(e.message());
 			// todo : return différent ? 
@@ -148,7 +149,8 @@ antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *c
 	try {
 		int index = funcCtxt.top().get(context->LITERAL()->getText())->bp_offset;
 		std::cout
-			<< "  movl $0x" << std::hex << stoi(context->CONST()->getText()) << std::dec << ", "<< -1*index <<"(%rbp)\n";	
+			<< "  movl $0x" << std::hex << stoi(context->CONST()->getText()) << std::dec << ", "<< -1*index <<"(%rbp)\n";
+
 	} catch (UndeclaredVarException e) {
 		errorMessage(e.message());
 	}
@@ -165,6 +167,8 @@ antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *con
 	std::string literal = context->LITERAL()->getText();
 	Entry *literalEntry = funcCtxt.top().get(literal);
 
+    cfg->current_bb->add_IRInstr(new IRInstr_popvar(cfg->current_bb, literal));
+
 	std::cout << "  popq %rax\n" 
 			  << "  movl %eax, " << -literalEntry->bp_offset << "(%rbp)\n";
 
@@ -174,7 +178,9 @@ antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *con
 antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) {
 
 	visit(context->children[0]);// pushes result in the stack 
-	visit(context->children[2]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack
+
+	cfg->current_bb->add_IRInstr(new IRInstr_sub(cfg->current_bb));
 
 	std::cout << "# sub\n";
 
@@ -193,7 +199,9 @@ antlrcpp::Any CodeGenVisitor::visitOperatorPar(ifccParser::OperatorParContext *c
 antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { 
 
 	visit(context->children[0]);// pushes result in the stack 
-	visit(context->children[2]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack
+
+	cfg->current_bb->add_IRInstr(new IRInstr_div(cfg->current_bb));
 
 	std::cout << "# divide\n";
 
@@ -209,7 +217,7 @@ antlrcpp::Any CodeGenVisitor::visitOperatorAdd(ifccParser::OperatorAddContext *c
 	
 	visit(context->children[0]);// pushes result in the stack 
 	visit(context->children[2]);// pushes result in the stack 
-
+    cfg->current_bb->add_IRInstr(new IRInstr_add(cfg->current_bb));
 	std::cout << "# add\n";
 
 	std::cout<<	"  popq %rbx\n"//right member
@@ -226,6 +234,7 @@ antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *c
 	std::string literal = context->LITERAL()->getText();
 	Entry *literalEntry = funcCtxt.top().get(literal);
 
+    cfg->current_bb->add_IRInstr(new IRInstr_pushvar(cfg->current_bb,literal));
 	std::cout << "  movl " << -literalEntry->bp_offset << "(%rbp), %eax\n"
 			  << "  pushq %rax\n" ;
 
@@ -244,6 +253,8 @@ antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 antlrcpp::Any CodeGenVisitor::visitOperatorMult(ifccParser::OperatorMultContext *context) { 
 	visit(context->children[0]);// pushes result in the stack 
 	visit(context->children[2]);// pushes result in the stack 
+
+    cfg->current_bb->add_IRInstr(new IRInstr_mul(cfg->current_bb));
 
 	std::cout << "# mult\n";
 

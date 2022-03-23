@@ -10,6 +10,7 @@
 #include "IRInstr_div.h"
 #include "IRInstr_ldconst.h"
 #include "IRInstr_mul.h"
+#include "IRInstr_popvar.h"
 #include "IRInstr_pushconst.h"
 #include "IRInstr_pushvar.h"
 #include "IRInstr_rmem.h"

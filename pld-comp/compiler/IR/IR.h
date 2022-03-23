@@ -38,6 +38,7 @@ public:
 		cmp_eq,
 		cmp_lt,
 		cmp_le,
+		popvar,
 		pushvar,
 		pushconst
 	} Operation;

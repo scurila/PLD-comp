@@ -2,10 +2,10 @@
 
 #include "IR.h"
 
-class IRInstr_ldconst : public IRInstr
+class IRInstr_popvar : public IRInstr
 {
 public:
-    IRInstr_popvar(BasicBlock *bb, std::string variableName, int64_t value) : IRInstr(bb, ldconst, ""), value(value) {
+    IRInstr_popvar(BasicBlock *bb, std::string variableName) : IRInstr(bb, popvar, "") {
         variable = symbolTable()->get(variableName);
         type = variable->type;
     }
@@ -15,5 +15,4 @@ public:
 
 private:
     Entry *variable;
-    int64_t value;
 };

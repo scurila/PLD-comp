@@ -63,7 +63,7 @@ void CFG::gen_x86_epilogue(ostream &o){
 }
 
 void CFG::add_to_symbol_table(string name, string type){
-    symbolTable.addEntry(name, type);
+    symbolTable->addEntry(name, type);
 }
 
 

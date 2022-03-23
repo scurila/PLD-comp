@@ -16,37 +16,41 @@ using namespace std;
 
 int main(int argn, const char **argv)
 {
-  stringstream in;
-  if (argn==2)
-  {
-     ifstream lecture(argv[1]);
-     in << lecture.rdbuf();
-  }
-  else
-  {
-      cerr << "usage: ifcc path/to/file.c" << endl ;
-      exit(1);
-  }
-  
-  ANTLRInputStream input(in.str());
+    stringstream in;
+    if (argn == 2)
+    {
+        ifstream lecture(argv[1]);
+        in << lecture.rdbuf();
+    }
+    else
+    {
+        cerr << "usage: ifcc path/to/file.c" << endl;
+        exit(1);
+    }
 
-  ifccLexer lexer(&input);
-  CommonTokenStream tokens(&lexer);
+    ANTLRInputStream input(in.str());
 
-  tokens.fill();
+    ifccLexer lexer(&input);
+    CommonTokenStream tokens(&lexer);
 
-  ifccParser parser(&tokens);
-  tree::ParseTree* tree = parser.axiom();
+    tokens.fill();
 
-  if(parser.getNumberOfSyntaxErrors() != 0)
-  {
-      cerr << "error: syntax error during parsing" << endl;
-      exit(1);
-  }
+    ifccParser parser(&tokens);
+    tree::ParseTree *tree = parser.axiom();
 
-  CFG *main_cfg = new CFG();
-  CodeGenVisitor v(main_cfg);
-  v.visit(tree);
+    if (parser.getNumberOfSyntaxErrors() != 0)
+    {
+        cerr << "error: syntax error during parsing" << endl;
+        exit(1);
+    }
 
-  return 0;
+    CFG *main_cfg = new CFG();
+    CodeGenVisitor v(main_cfg);
+    v.visit(tree);
+
+	main_cfg->gen_x86_prologue(std::cout);
+	main_cfg->gen_asm(std::cout, x86);
+	main_cfg->gen_x86_epilogue(std::cout);
+
+    return 0;
 }

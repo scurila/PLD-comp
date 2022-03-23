@@ -46,16 +46,36 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 		// todo : return différent ? 
 	}
 */
+	std::string type = context->type()->getText();
+	auto literals = context->LITERAL();
+	auto values = context->CONST();
 	
-	std::cout << "# init var\n";  // TODO is it still useful ?
+	auto valuesIt = begin(values);
+	for(auto itLit = begin(literals); itLit != end(literals); ++itLit) {
+    	string literalName = (*itLit)->getText();
+		int64_t value = stoi( (*valuesIt)->getText() );
+		
+		try {
+			funcCtxt.top().addEntry(literalName, type);
+			cfg->symbolTable->addEntry(literalName, type);
+
+			cfg->current_bb->add_IRInstr(new IRInstr_ldconst(cfg->current_bb, literalName, value));
+
+		} catch (DeclaredVarException e) {
+			errorMessage(e.message());
+			// todo : return différent ? 
+		}
+		++valuesIt;
+	}	
+
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *context) 
 {
 	std::string type = context->type()->getText();
-	std::vector<antlr4::tree::TerminalNode *> literals = context->LITERAL();
-	for(std::vector<antlr4::tree::TerminalNode *>::iterator it = begin(literals); it != end(literals); ++it) {
+	auto literals = context->LITERAL();
+	for(auto it = begin(literals); it != end(literals); ++it) {
     	string literalName = (*it)->getText();
 		try {
 			funcCtxt.top().addEntry(literalName, type);

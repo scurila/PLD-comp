@@ -8,7 +8,7 @@ instrlist: ( instr ';' instrlist )
      | '}' ;
 
 instr: RETURN expr   # ReturnExpr
-     | type LITERAL '=' CONST  # InitVarConst
+     | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst
      | type LITERAL (',' LITERAL)*  # DeclareVar
      | LITERAL '=' LITERAL # AssignVar
      | LITERAL '=' CONST   # AssignConst

@@ -131,10 +131,8 @@ public:
 	void gen_asm(ostream &o, Arch arch);
 
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
-	void gen_x86_prologue(ostream &o);
-	void gen_x86_epilogue(ostream &o);
-	void gen_arm_prologue(ostream &o);
-    void gen_arm_epilogue(ostream &o);
+	void gen_prologue(ostream &o, Arch arch);
+	void gen_epilogue(ostream &o, Arch arch);
 
 	// symbol table methods
 	void add_to_symbol_table(string name, string type);
@@ -154,6 +152,12 @@ protected:
 	int nbTmpVar;
 
 	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
+
+private:
+	void gen_x86_prologue(ostream &o);
+	void gen_x86_epilogue(ostream &o);
+	void gen_arm_prologue(ostream &o);
+    void gen_arm_epilogue(ostream &o);
 };
 
 #endif

@@ -48,9 +48,9 @@ int main(int argn, const char **argv)
     CodeGenVisitor v(main_cfg);
     v.visit(tree);
 
-	main_cfg->gen_x86_prologue(std::cout);
+	main_cfg->gen_prologue(std::cout, arm);
 	main_cfg->gen_asm(std::cout, arm);
-	main_cfg->gen_x86_epilogue(std::cout);
+	main_cfg->gen_epilogue(std::cout, arm);
 
     return 0;
 }

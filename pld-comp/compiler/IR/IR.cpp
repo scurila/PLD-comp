@@ -41,7 +41,7 @@ void CFG::gen_asm(ostream &o, Arch arch){
 
 
 
-void IRInstr::gen_prologue(ostream &o, Arch arch) {/** ARM generation wrapper (calls x86 or arm generator based on flag) */
+void CFG::gen_prologue(ostream &o, Arch arch) {/** ARM generation wrapper (calls x86 or arm generator based on flag) */
     switch(arch)
     {
         case x86:
@@ -52,6 +52,20 @@ void IRInstr::gen_prologue(ostream &o, Arch arch) {/** ARM generation wrapper (c
             return;
     }
 }
+
+
+void CFG::gen_epilogue(ostream &o, Arch arch) {/** ARM generation wrapper (calls x86 or arm generator based on flag) */
+    switch(arch)
+    {
+        case x86:
+            gen_x86_epilogue(o);
+            return;
+        case arm:
+            gen_arm_epilogue(o);
+            return;
+    }
+}
+
 
 void CFG::gen_x86_prologue(ostream &o){
     o << ".text\n";

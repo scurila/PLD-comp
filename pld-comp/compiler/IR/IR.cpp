@@ -12,6 +12,7 @@ void IRInstr::gen_asm(ostream &o, Arch arch) {/** ARM generation wrapper (calls 
     }
 }
 
+
 SymbolTable * const IRInstr::symbolTable() const
 {
     return bb->cfg->symbolTable;
@@ -38,6 +39,19 @@ void CFG::gen_asm(ostream &o, Arch arch){
     }
 }
 
+
+
+void IRInstr::gen_prologue(ostream &o, Arch arch) {/** ARM generation wrapper (calls x86 or arm generator based on flag) */
+    switch(arch)
+    {
+        case x86:
+            gen_x86_prologue(o);
+            return;
+        case arm:
+            gen_arm_prologue(o);
+            return;
+    }
+}
 
 void CFG::gen_x86_prologue(ostream &o){
     o << ".text\n";

@@ -37,7 +37,7 @@ public:
 	} Operation;
 
 	/**  constructor */
-	IRInstr(BasicBlock *bb_, Operation op, string t);
+	IRInstr(BasicBlock *bb_, Operation op, string t): bb(bb_), op(op), type(t) {}
 
 	/** Actual code generation */
 	void gen_asm(ostream &o, bool x86); /** ARM generation wrapper (calls x86 or arm generator based on flag) */
@@ -112,6 +112,7 @@ class CFG
 public:
 	CFG() {
 		current_bb = new BasicBlock(this, ".L0");
+		bbs.push_back(current_bb);
 		nextBBnumber = 1;
 		symbolTable = new SymbolTable();
 	}

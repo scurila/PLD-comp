@@ -13,11 +13,11 @@ all: ifcc
 ##########################################
 # link together all pieces of our compiler 
 SOURCES=$(wildcard IR/*.cpp)
-OBJECTS=build/main.o build/SymbolTable.o build/CodeGenVisitor.o build/ifccBaseVisitor.o build/ifccLexer.o build/ifccVisitor.o build/ifccParser.o $(SOURCES:%.cpp=build/%.o)
+OBJECTS=build/main.o build/SymbolTable.o build/CodeGenVisitor.o build/ifccBaseVisitor.o build/ifccLexer.o build/ifccVisitor.o build/ifccParser.o build/Utils.o $(SOURCES:%.cpp=build/%.o)
 
 ifcc: $(OBJECTS)
 	@mkdir -p build
-	$(CC) $(LDFLAGS) build/*.o $(ANTLRLIB) -o ifcc
+	$(CC) $(LDFLAGS) build/*.o build/**/*.o $(ANTLRLIB) -o ifcc
 
 ##########################################
 # compile our hand-writen C++ code: main(), CodeGenVisitor, etc.

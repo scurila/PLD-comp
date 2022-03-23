@@ -12,6 +12,12 @@
 class BasicBlock;
 class CFG;
 
+typedef enum
+{
+	x86,
+	arm
+} Arch;
+
 //! The class for one 3-address instruction
 class IRInstr
 {
@@ -40,7 +46,7 @@ public:
 	IRInstr(BasicBlock *bb_, Operation op, string t): bb(bb_), op(op), type(t) {}
 
 	/** Actual code generation */
-	void gen_asm(ostream &o, bool x86); /** ARM generation wrapper (calls x86 or arm generator based on flag) */
+	void gen_asm(ostream &o, Arch arch); /** ARM generation wrapper (calls x86 or arm generator based on flag) */
 	virtual void gen_x86(ostream &o) = 0; /** < x86 assembly code generation for this IR instruction */
 	virtual void gen_arm(ostream &o) = 0; /** < M1 ARM assembly code generation for this IR instruction */
 
@@ -82,6 +88,8 @@ class BasicBlock
 {
 public:
 	BasicBlock(CFG *cfg, string entry_label): cfg(cfg), label(entry_label) {}
+	
+	void gen_asm(ostream &o, Arch arch); 
 	void gen_x86(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
     void gen_arm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
@@ -120,8 +128,8 @@ public:
 	void add_bb(BasicBlock *bb);
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
-	void gen_x86(ostream &o);
-	void gen_arm(ostream &o);
+	void gen_asm(ostream &o, Arch arch);
+
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	void gen_x86_prologue(ostream &o);
 	void gen_x86_epilogue(ostream &o);

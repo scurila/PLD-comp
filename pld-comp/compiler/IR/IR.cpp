@@ -1,8 +1,15 @@
 #include "IR.h"
 
-void IRInstr::gen_asm(ostream &o, bool x86) {/** ARM generation wrapper (calls x86 or arm generator based on flag) */
-    if (x86) gen_x86(o);
-    else gen_arm(o);
+void IRInstr::gen_asm(ostream &o, Arch arch) {/** ARM generation wrapper (calls x86 or arm generator based on flag) */
+    switch(arch) 
+    {
+        case x86:
+            gen_x86(o);
+            return;
+        case arm:
+            gen_arm(o);
+            return;
+    }
 }
 
 SymbolTable * const IRInstr::symbolTable() const
@@ -19,7 +26,7 @@ void CFG::add_bb(BasicBlock *bb){
     bbs.push_back(bb);
 }
 
-void CFG::gen_x86(ostream &o){
+void CFG::gen_asm(ostream &o, Arch arch){
 
     for( int i = 0; i < bbs.size(); i++){
         BasicBlock* b = bbs[i];
@@ -27,7 +34,7 @@ void CFG::gen_x86(ostream &o){
             <<":"
             << std::endl;
 
-        b->gen_x86(o);
+        b->gen_asm(o, arch);
     }
 }
 
@@ -69,6 +76,14 @@ void CFG::add_to_symbol_table(string name, string type){
 
 
 // BasicBlock methods :
+
+void BasicBlock::gen_asm(ostream &o, Arch arch)
+{
+    for( int i = 0; i < instrs.size(); i++){
+        IRInstr* instr = instrs[i];
+        instr->gen_asm(o, arch);
+    }
+}
 
 void BasicBlock::gen_x86(ostream &o) /**< x86 assembly code generation for this basic block (very simple) */
 {

@@ -81,7 +81,7 @@ void CFG::gen_x86_prologue(ostream &o){
 
     	// TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
     o   << "  movq %rsp, %rax\n"
-    	<< "  subq $0x100, %rax\n"
+    	<< "  subq $" << symbolTable->topOffset << ", %rax\n"
     	<< "  movq %rax, %rsp\n";
 
 }
@@ -91,7 +91,7 @@ void CFG::gen_x86_epilogue(ostream &o){
 
 	o   // move rsp to pop rbp later
 		<< "  movq %rsp, %rbx\n"
-		<< "  addq $0x100, %rbx\n"
+		<< "  addq $" << symbolTable->topOffset << ", %rbx\n"
 		<< "  movq %rbx, %rsp\n";
 
 	o  // restore rsp (and remove rbp from stack)

@@ -81,11 +81,8 @@ void CFG::gen_arm_prologue(ostream &o){
         << "; %bb.0:\n"
         // TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
         << "sub	sp, sp, #100\n"
-        << ".cfi_def_cfa_offset 100\n"
+        << ".cfi_def_cfa_offset 100\n";
         // todo : change when functions supported
-        << "mov	w0, #0\n";
-    o   << "  pushq %rbp\n"
-        << "  movq %rsp, %rbp\n";
 }
 
 void CFG::gen_arm_epilogue(ostream &o){
@@ -95,10 +92,6 @@ void CFG::gen_arm_epilogue(ostream &o){
 		<< "  ret\n"
 		<< "  .cfi_endproc\n"
         << "  .subsections_via_symbols\n";
-
-	o  // restore rsp (and remove rbp from stack)
-		<< "  popq %rbp\n"
-		<< "  ret\n";
 }
 
 void CFG::add_to_symbol_table(string name, string type){

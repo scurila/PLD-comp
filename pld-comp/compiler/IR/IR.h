@@ -123,6 +123,7 @@ public:
 		bbs.push_back(current_bb);
 		nextBBnumber = 1;
 		symbolTable = new SymbolTable();
+		nbTmpVar = 0;
 	}
 
 	void add_bb(BasicBlock *bb);
@@ -139,7 +140,7 @@ public:
 	// symbol table methods
 	void add_to_symbol_table(string name, string type);
 	string create_new_tempvar(string type);
-	int get_var_index(string name);
+	//int get_var_index(string name);
 	string get_var_type(string name);
 
 	// basic block management
@@ -150,6 +151,8 @@ public:
 protected:
 
 	int nextBBnumber;			  /**< just for naming */
+
+	int nbTmpVar;
 
 	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 };

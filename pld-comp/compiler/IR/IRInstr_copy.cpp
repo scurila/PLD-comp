@@ -14,12 +14,12 @@ void IRInstr_copy::gen_x86(ostream &o) {
 }
 
 void IRInstr_copy::gen_arm(ostream &o) {
-     o << "# copy\n";
+     o << "; -- copy\n";
     try {
 		o 
-			<< "  movl "<< -1* symbolTable()->get(val)->bp_offset <<"(%rbp), " << "(%eax)\n";
+			<< "  ldr w8, [sp, #"<< -1* symbolTable()->get(val)->bp_offset <<"]\n";
 		o
-			<< "  movl %eax, " <<  -1*symbolTable()->get(dest)->bp_offset <<"(%rbp)\n";	
+			<< "  str w8, [sp, #" <<  -1*symbolTable()->get(dest)->bp_offset <<"]\n";	
 	} catch (UndeclaredVarException e) {
 		errorMessage(e.message());
 	}

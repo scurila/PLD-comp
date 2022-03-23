@@ -74,6 +74,22 @@ void CFG::add_to_symbol_table(string name, string type){
 }
 
 
+string CFG::create_new_tempvar(string type){
+    string tmpName = "tmp"+std::to_string(nbTmpVar);
+    symbolTable->addEntry(tmpName, type);
+    return tmpName;
+}
+
+/*int CFG::get_var_index(string name){
+
+}*/
+
+
+string CFG::get_var_type(string name){
+     return symbolTable->get(name)->type;
+
+}
+
 
 // BasicBlock methods :
 

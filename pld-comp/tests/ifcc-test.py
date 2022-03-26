@@ -21,7 +21,7 @@ import shutil
 import sys
 import subprocess
 
-MACM1 = True
+MACM1 = False
 
 def command(string, logfile=None):
     """execute `string` as a shell command, optionnaly logging stdout+stderr to a file. return exit status.)"""

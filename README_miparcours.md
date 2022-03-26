@@ -11,7 +11,7 @@ Ce document a vocation à décrire l'état du projet au moment du rendu de mi-pa
 - [x] Les commentaires sont ignorés
 - [x] Déclaration de variables, à plusieurs endroits dans le code
 - [x] Linéarisation d'expressions
-- [x] Calcul des expressions arithmétiques (+, -, *, parenthèses)
+- [x] Calcul des expressions arithmétiques (+, -, *, parenthèses)  [mais les priorités à gauche sont mal gérées]
 - [x] Utilisation de variables et constantes numériques dans les expressions
 - [ ] Utilisation de caractères dans les expressions
 - [ ] Gestion des opérations logiques bit-à-bit

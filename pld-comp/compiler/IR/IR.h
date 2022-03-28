@@ -40,6 +40,7 @@ public:
 		cmp_le,
 		cmp_gt,
 		cmp_ge,
+		cmp_ineq,
 		popvar,
 		pushvar,
 		pushconst

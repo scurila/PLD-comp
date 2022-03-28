@@ -5,7 +5,7 @@ axiom : prog ;
 prog : 'int' 'main' '(' ')' '{' instrlist ;
 
 instrlist: ( instr ';' instrlist ) 
-     | '}' ;
+     | '}' | (';'instrlist ) ;
 
 instr: RETURN expr   # ReturnExpr
      | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst

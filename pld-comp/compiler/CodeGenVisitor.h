@@ -46,7 +46,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 
   		virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override;
 
-
+		virtual antlrcpp::Any visitOperatorCmp(ifccParser::OperatorCmpContext *ctx) override;
 
 		
 		// TEMPORAIRE

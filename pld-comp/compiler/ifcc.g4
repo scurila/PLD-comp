@@ -17,9 +17,8 @@ instr: RETURN expr   # ReturnExpr
 
 expr: '(' expr ')' # OperatorPar
      | expr ( '*' | '/' ) expr # OperatorMultDiv
-/*     | expr '/' expr # OperatorDiv */
      | expr ( '+' | '-' ) expr # OperatorAddSub
-/*     | expr '-' expr # OperatorSub */
+     | expr ('==' | '<' | '<=' | '>' | '>=' | '!=') expr # OperatorCmp
      | CONST # ConstExpr
      | LITERAL # LiteralExpr
 ;

@@ -38,6 +38,8 @@ public:
 		cmp_eq,
 		cmp_lt,
 		cmp_le,
+		cmp_gt,
+		cmp_ge,
 		popvar,
 		pushvar,
 		pushconst

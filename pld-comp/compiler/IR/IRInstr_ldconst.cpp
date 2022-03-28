@@ -32,5 +32,5 @@ void IRInstr_ldconst::gen_arm(ostream &o)
 {  
     o << "; -- ldconst \n";
     o << "mov w8, #" << value << "\n"
-    << "str w8, [sp, #" << variable->bp_offset << "]\n"; 
+    << "str w8, [x29, #" << -1*variable->bp_offset << "]\n"; 
 }

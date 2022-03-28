@@ -15,13 +15,12 @@ instr: RETURN expr   # ReturnExpr
      | LITERAL '=' expr # AssignExpr
      ;
 
-expr:  expr '*' expr # OperatorMult
-     | expr '/' expr # OperatorDiv
-     | expr '+' expr # OperatorAdd
-     | expr '-' expr # OperatorSub
+expr: '(' expr ')' # OperatorPar
+     | expr ( '*' | '/' ) expr # OperatorMultDiv
+     | expr ( '+' | '-' ) expr # OperatorAddSub
+     | expr ('==' | '<' | '<=' | '>' | '>=' | '!=') expr # OperatorCmp
      | CONST # ConstExpr
      | LITERAL # LiteralExpr
-     | '(' expr ')' # OperatorPar
 ;
 
 /* literallist: LITERAL ',' literallist | LITERAL ; */

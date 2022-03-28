@@ -142,6 +142,27 @@ antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *con
 	return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitOperatorPar(ifccParser::OperatorParContext *context) {
+	return visitChildren(context);
+}
+
+antlrcpp::Any CodeGenVisitor::visitOperatorAddSub(ifccParser::OperatorAddSubContext *context) {
+	
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack 
+
+	string op = context->children[1]->getText();
+
+	if(op == "+") {
+    	cfg->current_bb->add_IRInstr(new IRInstr_add(cfg->current_bb));
+	}
+	else if(op == "-") {
+		cfg->current_bb->add_IRInstr(new IRInstr_sub(cfg->current_bb));
+	}
+
+	return 0; 
+ }
+/*
 antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) {
 
 	visit(context->children[0]);// pushes result in the stack 
@@ -149,30 +170,8 @@ antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *c
 
 	cfg->current_bb->add_IRInstr(new IRInstr_sub(cfg->current_bb));
     return 0;
-}
+}*/
 
-antlrcpp::Any CodeGenVisitor::visitOperatorPar(ifccParser::OperatorParContext *context) {
-	return visitChildren(context);
-}
-
-antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { 
-
-	visit(context->children[0]);// pushes result in the stack 
-	visit(context->children[2]);// pushes result in the stack
-
-	cfg->current_bb->add_IRInstr(new IRInstr_div(cfg->current_bb));
-
-	return 0;
-}
-
-antlrcpp::Any CodeGenVisitor::visitOperatorAdd(ifccParser::OperatorAddContext *context) {
-	
-	visit(context->children[0]);// pushes result in the stack 
-	visit(context->children[2]);// pushes result in the stack 
-    cfg->current_bb->add_IRInstr(new IRInstr_add(cfg->current_bb));
-
-	return 0; 
- }
 
 antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *context) {
 	std::string literal = context->LITERAL()->getText();
@@ -191,11 +190,56 @@ antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitOperatorMult(ifccParser::OperatorMultContext *context) { 
+antlrcpp::Any CodeGenVisitor::visitOperatorMultDiv(ifccParser::OperatorMultDivContext *context) { 
 	visit(context->children[0]);// pushes result in the stack 
 	visit(context->children[2]);// pushes result in the stack 
 
-    cfg->current_bb->add_IRInstr(new IRInstr_mul(cfg->current_bb));
+	string op = context->children[1]->getText();
+
+	if(op == "*") {
+    	cfg->current_bb->add_IRInstr(new IRInstr_mul(cfg->current_bb));
+	}
+	else if(op == "/") {
+		cfg->current_bb->add_IRInstr(new IRInstr_div(cfg->current_bb));
+	}
 
 	return 0;
+}
+
+
+/*antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { 
+
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack
+
+	cfg->current_bb->add_IRInstr(new IRInstr_div(cfg->current_bb));
+
+	return 0;
+}*/
+
+antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *context) {
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack
+	string op = context->children[1]->getText();
+
+	if (op == "=="){
+		//cfg->current_bb->add_IRInstr(new IRInstr);
+	}
+	else if (op == "<"){
+
+	}
+	else if (op == "<="){
+		
+	}
+	else if (op == ">"){
+		
+	}
+	else if (op == ">="){
+		
+	}
+	else if (op == "!="){
+		
+	}
+
+    return 0;
 }

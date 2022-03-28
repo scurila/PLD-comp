@@ -217,6 +217,6 @@ antlrcpp::Any CodeGenVisitor::visitOperatorMultDiv(ifccParser::OperatorMultDivCo
 	return 0;
 }*/
 
-antlrcpp::Any visitOperatorCmp(ifccParser::OperatorCmpContext *ctx) {
+antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *ctx) {
     return 0;
 }

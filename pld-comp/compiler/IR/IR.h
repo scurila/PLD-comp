@@ -1,6 +1,7 @@
 #ifndef IR_H
 #define IR_H
 
+#include <functional>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -40,7 +41,8 @@ public:
 		cmp_le,
 		popvar,
 		pushvar,
-		pushconst
+		pushconst,
+		bit_and
 	} Operation;
 
 	/**  constructor */

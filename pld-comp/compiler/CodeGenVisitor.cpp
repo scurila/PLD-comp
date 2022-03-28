@@ -229,3 +229,30 @@ antlrcpp::Any CodeGenVisitor::visitOperatorMultDiv(ifccParser::OperatorMultDivCo
 
 	return 0;
 }*/
+
+antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *context) {
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack
+	string op = context->children[1]->getText();
+
+	if (op == "=="){
+		//cfg->current_bb->add_IRInstr(new IRInstr);
+	}
+	else if (op == "<"){
+
+	}
+	else if (op == "<="){
+		
+	}
+	else if (op == ">"){
+		
+	}
+	else if (op == ">="){
+		
+	}
+	else if (op == "!="){
+		
+	}
+
+    return 0;
+}

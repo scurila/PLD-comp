@@ -4,8 +4,11 @@
 #include "IRInstr_add.h"
 #include "IRInstr_call.h"
 #include "IRInstr_cmpeq.h"
+#include "IRInstr_cmpineq.h"
 #include "IRInstr_cmplt.h"
 #include "IRInstr_comple.h"
+#include "IRInstr_cmpgt.h"
+#include "IRInstr_cmpge.h"
 #include "IRInstr_copy.h"
 #include "IRInstr_div.h"
 #include "IRInstr_ldconst.h"
@@ -16,3 +19,4 @@
 #include "IRInstr_rmem.h"
 #include "IRInstr_wmem.h"
 #include "IRInstr_sub.h"
+

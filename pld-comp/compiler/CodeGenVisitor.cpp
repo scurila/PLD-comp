@@ -223,22 +223,22 @@ antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *c
 	string op = context->children[1]->getText();
 
 	if (op == "=="){
-		//cfg->current_bb->add_IRInstr(new IRInstr);
+		cfg->current_bb->add_IRInstr(new IRInstr_cmpeq(cfg->current_bb));
 	}
 	else if (op == "<"){
-
+		cfg->current_bb->add_IRInstr(new IRInstr_cmplt(cfg->current_bb));
 	}
 	else if (op == "<="){
-		
+		cfg->current_bb->add_IRInstr(new IRInstr_cmple(cfg->current_bb));
 	}
 	else if (op == ">"){
-		
+		cfg->current_bb->add_IRInstr(new IRInstr_cmpgt(cfg->current_bb));
 	}
 	else if (op == ">="){
-		
+		cfg->current_bb->add_IRInstr(new IRInstr_cmpge(cfg->current_bb));
 	}
 	else if (op == "!="){
-		
+		cfg->current_bb->add_IRInstr(new IRInstr_cmpineq(cfg->current_bb));
 	}
 
     return 0;

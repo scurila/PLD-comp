@@ -1,7 +1,13 @@
 #include "IRInstr_cmpeq.h"
 
 void IRInstr_cmpeq::gen_x86(ostream &o) {
+    o   << "# cmpeq\n";
 
+    o   <<	"  popq %rbx\n"//right member
+        << "  popq %rax\n"//left member
+        << "  cmp %rbx, %rax\n"//compare content of a and b
+        << "  sete %rax\n"
+        << "  pushq %rax\n";
 }
 
 void IRInstr_cmpeq::gen_arm(ostream &o) {

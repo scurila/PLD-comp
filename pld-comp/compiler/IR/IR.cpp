@@ -79,9 +79,11 @@ void CFG::gen_x86_prologue(ostream &o){
     o   << "  pushq %rbp\n"
         << "  movq %rsp, %rbp\n";
 
+    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+
     	// TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
     o   << "  movq %rsp, %rax\n"
-    	<< "  subq $" << symbolTable->topOffset << ", %rax\n"
+    	<< "  subq $" << alignedTopOffset << ", %rax\n"
     	<< "  movq %rax, %rsp\n";
 
 }
@@ -89,9 +91,11 @@ void CFG::gen_x86_prologue(ostream &o){
 void CFG::gen_x86_epilogue(ostream &o){
     o  << "  popq %rax\n";  // pop returned value to rax
 
+    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+
 	o   // move rsp to pop rbp later
 		<< "  movq %rsp, %rbx\n"
-		<< "  addq $" << symbolTable->topOffset << ", %rbx\n"
+		<< "  addq $" << alignedTopOffset << ", %rbx\n"
 		<< "  movq %rbx, %rsp\n";
 
 	o  // restore rsp (and remove rbp from stack)

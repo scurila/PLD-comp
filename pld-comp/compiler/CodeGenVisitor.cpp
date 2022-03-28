@@ -19,6 +19,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 		}
 		warningMessage(msg);
 	}
+
 	return childrenRes;
 }
 
@@ -47,13 +48,25 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	}
 */
 	std::string type = context->type()->getText();
+	int type_size = typeSize(type);
+	int64_t type_mask = 0;   // mask of ones of the length of type_size*8, used to check value length
+	for(int i = 0; i < type_size * 8; i++) {
+		type_mask += (1 << i);
+	}
+
 	auto literals = context->LITERAL();
 	auto values = context->CONST();
 	
 	auto valuesIt = begin(values);
 	for(auto itLit = begin(literals); itLit != end(literals); ++itLit) {
     	string literalName = (*itLit)->getText();
-		int64_t value = stoi( (*valuesIt)->getText() );
+		int64_t value = stoll( (*valuesIt)->getText() );
+
+		if((value & type_mask) != value) {
+			std::ostringstream stream;
+			stream << "Value " << value << " is too large to be stored in variable '" << literalName << "' (type " << type << "). Actual value will be truncated to " << (value & type_mask) << "."; 
+			warningMessage(stream.str());
+		}
 		
 		try {
 			funcCtxt.top().addEntry(literalName, type);
@@ -184,7 +197,7 @@ antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *c
 
 antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
-	int val = stoi(ctx->CONST()->getText());
+	int64_t val = stoll(ctx->CONST()->getText());
 	cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb, val));
 
     return 0;

@@ -6,7 +6,8 @@ void IRInstr_cmpeq::gen_x86(ostream &o) {
     o   <<	"  popq %rbx\n"//right member
         << "  popq %rax\n"//left member
         << "  cmp %rbx, %rax\n"//compare content of a and b
-        << "  sete %rax\n"
+        << "  xor %rax, %rax\n"
+        << "  sete %al\n"
         << "  pushq %rax\n";
 }
 

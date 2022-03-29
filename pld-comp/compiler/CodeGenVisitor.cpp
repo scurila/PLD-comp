@@ -257,16 +257,16 @@ antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *c
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitOperatorUnaryPrefix(ifccParser::OperatorUnaryPrefixContext *ctx) {
+antlrcpp::Any CodeGenVisitor::visitOperatorUnaryPrefix(ifccParser::OperatorUnaryPrefixContext *context) {
 	visit(context->children[1]);
 
 	string op = context->children[0]->getText();
 
-	if(op == "-") {
-		
+	if (op == "-") {
+		cfg->current_bb->add_IRInstr(new IRInstr_opp(cfg->current_bb));
 	}
-	else(op == "!") {
-
+	else if (op == "!") {
+		cfg->current_bb->add_IRInstr(new IRInstr_logicnot(cfg->current_bb));
 	}
 
 	return 0;

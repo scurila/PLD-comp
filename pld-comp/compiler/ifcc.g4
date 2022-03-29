@@ -19,6 +19,7 @@ expr: '(' expr ')' # OperatorPar
      | expr ( '*' | '/' ) expr # OperatorMultDiv
      | expr ( '+' | '-' ) expr # OperatorAddSub
      | expr ('==' | '<' | '<=' | '>' | '>=' | '!=') expr # OperatorCmp
+     | ( '-' | '!' ) expr # OperatorUnaryPrefix
      | CONST # ConstExpr
      | LITERAL # LiteralExpr
 ;

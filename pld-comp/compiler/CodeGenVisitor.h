@@ -48,6 +48,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 
 		virtual antlrcpp::Any visitOperatorCmp(ifccParser::OperatorCmpContext *ctx) override;
 
+		virtual antlrcpp::Any visitOperatorUnaryPrefix(ifccParser::OperatorUnaryPrefixContext *ctx) override;
 		
 		// TEMPORAIRE
 		stack<SymbolTable> funcCtxt;

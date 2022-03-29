@@ -256,3 +256,18 @@ antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *c
 
     return 0;
 }
+
+antlrcpp::Any CodeGenVisitor::visitOperatorUnaryPrefix(ifccParser::OperatorUnaryPrefixContext *ctx) {
+	visit(context->children[1]);
+
+	string op = context->children[0]->getText();
+
+	if(op == "-") {
+		
+	}
+	else(op == "!") {
+
+	}
+
+	return 0;
+}

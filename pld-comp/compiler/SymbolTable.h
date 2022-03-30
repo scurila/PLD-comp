@@ -7,10 +7,10 @@
 
 using namespace std;
 
-enum VarTypes { INT, CHAR };
+/*enum VarTypes { INT, CHAR };
 const string VarTypeName[] = { "int", "char" };
 const int VarTypeSize[] = { 4, 4 };
-
+*/
 class Entry {
     public:
         Entry(string n, string t, int o, int s) : name(n), type(t), bp_offset(o), size(s), used(false) {};
@@ -23,7 +23,7 @@ class Entry {
 
 class SymbolTable {
     public:
-        SymbolTable() : topOffset(0) {};
+        SymbolTable() : topOffset(8) {}; // default to 8 to leave some space for ARM (should be handled differently later)
         bool addEntry(string name, string type);
         Entry* get(string name);
         vector<string> unusedVars();

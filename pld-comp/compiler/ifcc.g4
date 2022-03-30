@@ -5,7 +5,7 @@ axiom : prog ;
 prog : 'int' 'main' '(' ')' '{' instrlist ;
 
 instrlist: ( instr ';' instrlist ) 
-     | '}' ;
+     | '}' | (';'instrlist ) ;
 
 instr: RETURN expr   # ReturnExpr
      | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst
@@ -18,7 +18,9 @@ instr: RETURN expr   # ReturnExpr
 expr: '(' expr ')' # OperatorPar
      | expr ( '*' | '/' ) expr # OperatorMultDiv
      | expr ( '+' | '-' ) expr # OperatorAddSub
-     | expr ('==' | '<' | '<=' | '>' | '>=' | '!=') expr # OperatorCmp
+     | expr ( '==' | '<' | '<=' | '>' | '>=' | '!=') expr # OperatorCmp
+     | expr ( '&' | '|' ) expr # OperatorBinary
+     | ( '-' | '!' ) expr # OperatorUnaryPrefix
      | CONST # ConstExpr
      | LITERAL # LiteralExpr
 ;

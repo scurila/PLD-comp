@@ -40,7 +40,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 
     	// virtual antlrcpp::Any visitOperatorSub(ifccParser::OperatorSubContext *context) override;
 
-
+		virtual antlrcpp::Any visitOperatorBinary(ifccParser::OperatorBinaryContext *context) override;
 
     	virtual antlrcpp::Any visitLiteralExpr(ifccParser::LiteralExprContext *context) override;
 

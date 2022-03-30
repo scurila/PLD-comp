@@ -1,6 +1,7 @@
 #ifndef IR_H
 #define IR_H
 
+#include <functional>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -43,7 +44,9 @@ public:
 		cmp_ineq,
 		popvar,
 		pushvar,
-		pushconst
+		pushconst,
+		binand,
+		binor
 	} Operation;
 
 	/**  constructor */

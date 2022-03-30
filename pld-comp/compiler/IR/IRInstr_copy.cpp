@@ -19,9 +19,9 @@ void IRInstr_copy::gen_arm(ostream &o) {
      o << "; -- copy\n";
     try {
 		o 
-			<< "ldr w8, [x29, #"<< -1*symbolTable()->get(val)->bp_offset <<"]\n";
+			<< "ldr x8, [x29, #"<< -1*symbolTable()->get(val)->bp_offset <<"]\n";
 		o
-			<< "str w8, [x29, #" << -1*symbolTable()->get(dest)->bp_offset <<"]\n";	
+			<< "str x8, [x29, #" << -1*symbolTable()->get(dest)->bp_offset <<"]\n";	
 	} catch (UndeclaredVarException e) {
 		errorMessage(e.message());
 	}

@@ -13,10 +13,10 @@ void IRInstr_cmpeq::gen_x86(ostream &o) {
 
 void IRInstr_cmpeq::gen_arm(ostream &o) {
     o << "; -- cmpeq \n";
-    o << "ldr w8, [sp], #4\n" // POP right member
-        << "ldr w9, [sp], #4\n" // POP left member 
-        << "subs w9, w9, w8\n"
-        << "cset w9, eq\n"
-        << "and w9, w9, #0x1\n" 
-        << "str w9, [sp, #-4]!\n"; // push w9
+    o << "ldr x8, [sp], #16\n" // POP right member
+        << "ldr x9, [sp], #16\n" // POP left member 
+        << "subs x9, x9, x8\n"
+        << "cset x9, eq\n"
+        << "and x9, x9, #0x1\n" 
+        << "str x9, [sp, #-16]!\n"; // push w9
 }

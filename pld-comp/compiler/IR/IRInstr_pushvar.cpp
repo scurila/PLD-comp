@@ -14,6 +14,6 @@ void IRInstr_pushvar::gen_x86(ostream &o)
 void IRInstr_pushvar::gen_arm(ostream &o)
 {
     o << "; -- pushvar \n";
-    o << "ldr w3, [x29, #" << -1*variable->bp_offset << "]\n" 
-        << "str w3, [sp, #-4]!\n"; // push w3
+    o << "ldr x3, [x29, #" << -1*variable->bp_offset << "]\n" 
+        << "str x3, [sp, #-16]!\n"; // push w3
 }

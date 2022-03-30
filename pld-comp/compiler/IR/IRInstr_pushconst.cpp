@@ -8,5 +8,6 @@ void IRInstr_pushconst::gen_x86(ostream &o) {
 
 void IRInstr_pushconst::gen_arm(ostream &o) {
     o << "; -- pushconst \n";
-    o << "mov w8 #" << value << std::endl; 
+    o << "mov x8, #" << value << std::endl
+       << "str x8, [sp, #-16]!\n"; // push w9
 }

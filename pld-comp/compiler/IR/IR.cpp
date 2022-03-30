@@ -104,11 +104,11 @@ void CFG::gen_x86_epilogue(ostream &o){
 }
 
 void CFG::gen_arm_prologue(ostream &o){
-    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+    int alignedTopOffset = symbolTable->topOffset +  (16 - (symbolTable->topOffset % 16));
     o << ".section	__TEXT,__text,regular,pure_instructions\n";
     o   << ".build_version macos, 12, 0	sdk_version 12, 3\n"
         << ".globl	_main                           ; -- Begin function main\n"
-        << ".p2align	2\n"
+        << ".p2align	3\n"
         << "_main:                                  ; @main\n"
         << ".cfi_startproc\n"
         << "; %bb.0:\n"
@@ -121,10 +121,10 @@ void CFG::gen_arm_prologue(ostream &o){
 }
 
 void CFG::gen_arm_epilogue(ostream &o){
-    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+    int alignedTopOffset = symbolTable->topOffset +  (16 - (symbolTable->topOffset % 16));
 	o
+    << "ldr x0, [sp], #16\n" // POP w0 : lire [sp], puis pop de 4 (wX 32 bits)
         << "ldp x29, x30, [sp, #" << alignedTopOffset << "]\n" // restaure x29 x30 (pas le +16 - les 16 derniers oct) == 16-byte folded reload
-        << "ldr w0, [sp], #4\n" // POP w0 : lire [sp], puis pop de 4 (wX 32 bits)
 		<< "add sp, sp, #" << alignedTopOffset + 16 << "\n" // + les 16 de la backup 
 		<< "ret\n"
 		<< ".cfi_endproc\n"

@@ -294,6 +294,7 @@ antlrcpp::Any CodeGenVisitor::visitOperatorBinary(ifccParser::OperatorBinaryCont
 	return 0;
 }
 
+
 antlrcpp::Any CodeGenVisitor::visitCharExpr(ifccParser::CharExprContext *context) {
 	std::string charac = context->CHAR()->getText();
 	
@@ -301,5 +302,20 @@ antlrcpp::Any CodeGenVisitor::visitCharExpr(ifccParser::CharExprContext *context
 	
     cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb,convert));
 	
+}
+
+antlrcpp::Any CodeGenVisitor::visitCallFuncNoArgs(ifccParser::CallFuncNoArgsContext *context)  {
+	std::string funcname = context->LITERAL()->getText();
+	cfg->current_bb->add_IRInstr(new IRInstr_call(cfg->current_bb, funcname, 0));
+    return 0;
+}
+
+  
+antlrcpp::Any CodeGenVisitor::visitCallFuncArgs(ifccParser::CallFuncArgsContext *context) {
+	//visit x children (x arguments, compter le nombre)
+	//visit(context->children[0]);// pushes result in the stack 
+	
+	//cfg->current_bb->add_IRInstr(new IRInstr_call(cfg->current_bb, funcname, nbargs));
+
 	return 0;
 }

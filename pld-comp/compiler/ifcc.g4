@@ -8,6 +8,8 @@ instrlist: ( instr ';' instrlist )
      | '}' | (';'instrlist ) ;
 
 instr: RETURN expr   # ReturnExpr
+     | type LITERAL '('')' #CallFuncNoArgs
+     | type LITERAL '(' expr (',' expr)* ')' #CallFuncArgs
      | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst
      | type LITERAL (',' LITERAL)*  # DeclareVar
      | LITERAL '=' LITERAL # AssignVar
@@ -28,7 +30,7 @@ expr: '(' expr ')' # OperatorPar
 
 /* literallist: LITERAL ',' literallist | LITERAL ; */
 
-type : 'char' | 'int' ;
+type : 'char' | 'int' | 'void';
 
 RETURN : 'return' ;
 

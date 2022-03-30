@@ -14,6 +14,6 @@ void IRInstr_popvar::gen_x86(ostream &o)
 void IRInstr_popvar::gen_arm(ostream &o)
 {
     o << "; -- ldconst \n";
-    o << "ldr w8, [sp], #4\n" // pop w8
-      << "mov [x29, #" << -1*variable->bp_offset << "], w8\n";
+    o << "ldr x8, [sp], #16\n" // pop w8
+      << "str x8, [x29, #" << -1*variable->bp_offset << "]\n";
 }

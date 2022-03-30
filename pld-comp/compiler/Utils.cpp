@@ -5,7 +5,7 @@
 size_t typeSize(std::string typeName) 
 {
     if(typeName == "int") {
-        return 4;
+        return 8;
     } 
     else if(typeName == "char") {
         return 1;

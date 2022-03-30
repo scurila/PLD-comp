@@ -2,10 +2,15 @@ grammar ifcc;
 
 axiom : prog ;
 
-prog : 'int' 'main' '(' ')' '{' instrlist ;
+prog : 'int' 'main' '(' ')' instrblock ;
 
-instrlist: ( instr ';' instrlist ) 
-     | '}' | (';'instrlist ) ;
+instrblock: '{' instrlist '}' ;
+
+instrlist:  ( instr ';' | cf_struct ) (instrlist)* ;
+
+cf_struct:  
+     'if' '(' expr ')' instrblock ('else if' '(' expr ')' instrblock)* ('else' instrblock )? # IfElse
+     ;
 
 instr: RETURN expr   # ReturnExpr
      | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst
@@ -13,6 +18,7 @@ instr: RETURN expr   # ReturnExpr
      | LITERAL '=' LITERAL # AssignVar
      | LITERAL '=' CONST   # AssignConst
      | LITERAL '=' expr # AssignExpr
+     |  # Nop
      ;
 
 expr: '(' expr ')' # OperatorPar

@@ -18,11 +18,12 @@ instr: RETURN expr   # ReturnExpr
 expr: '(' expr ')' # OperatorPar
      | expr ( '*' | '/' ) expr # OperatorMultDiv
      | expr ( '+' | '-' ) expr # OperatorAddSub
-     | expr ( '==' | '<' | '<=' | '>' | '>=' | '!=') expr # OperatorCmp
+     | expr ( '==' | '<' | '<=' | '>' | '>=' | '!=' ) expr # OperatorCmp
      | expr ( '&' | '|' ) expr # OperatorBinary
      | ( '-' | '!' ) expr # OperatorUnaryPrefix
      | CONST # ConstExpr
      | LITERAL # LiteralExpr
+     | CHAR # CharExpr
 ;
 
 /* literallist: LITERAL ',' literallist | LITERAL ; */
@@ -33,6 +34,7 @@ RETURN : 'return' ;
 
 CONST : [0-9]+ ;
 LITERAL: [a-zA-Z]+ ;
+CHAR: '\'' .? '\'' ;
 
 ML_COMMENT : '/*' .*? '*/' -> skip ;
 SL_COMMENT : '//' .*? '\n' -> skip ;

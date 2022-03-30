@@ -11,6 +11,6 @@ class IRInstr_binand : public IRInstr {
         void gen_arm(ostream &o) override; /** < M1 ARM assembly code generation for this IR instruction */
 
         string leftmember;
-        string right member;
+        string rightmember;
         string destination;
 };

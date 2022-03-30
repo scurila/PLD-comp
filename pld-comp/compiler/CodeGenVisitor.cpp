@@ -1,8 +1,10 @@
 #include "CodeGenVisitor.h"
 #include "IR/IRInstr_binand.h"
+#include "IR/IRInstr_pushconst.h"
 #include "Utils.h"
 #include "Exceptions.h"
 #include "IR/instr.h"
+#include <cstdint>
 #include <string>
 #include <stack>
 
@@ -289,5 +291,15 @@ antlrcpp::Any CodeGenVisitor::visitOperatorBinary(ifccParser::OperatorBinaryCont
 		cfg->current_bb->add_IRInstr(new IRInstr_binor(cfg->current_bb));
 	}
 
+	return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitCharExpr(ifccParser::CharExprContext *context) {
+	std::string charac = context->CHAR()->getText();
+	
+	int64_t convert = (int64_t) charac[1];
+	
+    cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb,convert));
+	
 	return 0;
 }

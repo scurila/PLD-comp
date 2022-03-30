@@ -34,7 +34,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 
     	// virtual antlrcpp::Any visitOperatorDiv(ifccParser::OperatorDivContext *context) override;
 
-    	virtual antlrcpp::Any visitOperatorMultDiv(ifccParser::OperatorMultDivContext *context) override;
+    	virtual antlrcpp::Any visitOperatorMultDivMod(ifccParser::OperatorMultDivModContext *context) override;
 
     	virtual antlrcpp::Any visitOperatorAddSub(ifccParser::OperatorAddSubContext *context) override;
 

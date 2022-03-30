@@ -16,7 +16,7 @@ instr: RETURN expr   # ReturnExpr
      ;
 
 expr: '(' expr ')' # OperatorPar
-     | expr ( '*' | '/' ) expr # OperatorMultDiv
+     | expr ( '*' | '/' | '%') expr # OperatorMultDivMod
      | expr ( '+' | '-' ) expr # OperatorAddSub
      | expr ( '==' | '<' | '<=' | '>' | '>=' | '!=') expr # OperatorCmp
      | expr ( '&' | '|' ) expr # OperatorBinary

@@ -204,7 +204,7 @@ antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitOperatorMultDiv(ifccParser::OperatorMultDivContext *context) { 
+antlrcpp::Any CodeGenVisitor::visitOperatorMultDivMod(ifccParser::OperatorMultDivModContext *context) { 
 	visit(context->children[0]);// pushes result in the stack 
 	visit(context->children[2]);// pushes result in the stack 
 
@@ -215,6 +215,9 @@ antlrcpp::Any CodeGenVisitor::visitOperatorMultDiv(ifccParser::OperatorMultDivCo
 	}
 	else if(op == "/") {
 		cfg->current_bb->add_IRInstr(new IRInstr_div(cfg->current_bb));
+	}
+	else if(op == "%") {
+		cfg->current_bb->add_IRInstr(new IRInstr_mod(cfg->current_bb));
 	}
 
 	return 0;

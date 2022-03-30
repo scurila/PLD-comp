@@ -23,4 +23,4 @@
 #include "IRInstr_rmem.h"
 #include "IRInstr_wmem.h"
 #include "IRInstr_sub.h"
-
+#include "IRInstr_mod.h"

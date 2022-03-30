@@ -1,7 +1,7 @@
 int main(){
     int x,y,z;
-    z=3;
+    z=29;
     y=4;
-    x = z / y;
+    x = z % y;
     return x;
 }

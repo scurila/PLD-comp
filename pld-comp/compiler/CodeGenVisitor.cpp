@@ -1,4 +1,5 @@
 #include "CodeGenVisitor.h"
+#include "IR/IRInstr_binand.h"
 #include "Utils.h"
 #include "Exceptions.h"
 #include "IR/instr.h"
@@ -242,4 +243,19 @@ antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *c
 	}
 
     return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitOperatorBinary(ifccParser::OperatorBinaryContext *context) {
+	visit(context->children[0]);// pushes result in the stack 
+	visit(context->children[2]);// pushes result in the stack
+	string op = context->children[1]->getText();
+
+	if (op == "&"){
+		cfg->current_bb->add_IRInstr(new IRInstr_binand(cfg->current_bb));
+	}
+	else if (op == "|"){
+		cfg->current_bb->add_IRInstr(new IRInstr_binor(cfg->current_bb));
+	}
+
+	return 0;
 }

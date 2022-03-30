@@ -3,6 +3,7 @@
 #include "IR.h"
 #include "IRInstr_add.h"
 #include "IRInstr_binand.h"
+#include "IRInstr_binor.h"
 #include "IRInstr_call.h"
 #include "IRInstr_cmpeq.h"
 #include "IRInstr_cmplt.h"

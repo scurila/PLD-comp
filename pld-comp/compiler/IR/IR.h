@@ -45,7 +45,8 @@ public:
 		popvar,
 		pushvar,
 		pushconst,
-		bit_and
+		binand,
+		binor
 	} Operation;
 
 	/**  constructor */

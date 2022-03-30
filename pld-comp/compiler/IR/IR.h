@@ -28,6 +28,8 @@ public:
 	typedef enum
 	{
 		ldconst,
+		logicnot,
+		opp,
 		copy,
 		add,
 		sub,
@@ -43,6 +45,8 @@ public:
 		cmp_gt,
 		cmp_ge,
 		cmp_ineq,
+		jmp,
+		jne,
 		popvar,
 		pushvar,
 		pushconst,
@@ -124,10 +128,11 @@ protected:
 class CFG
 {
 public:
-	CFG() {
-		current_bb = new BasicBlock(this, ".L0");
+	CFG(string functionName): functionName(functionName) {
+		nextBBnumber = 0;
+		current_bb = new BasicBlock(this, new_bb_name());
 		bbs.push_back(current_bb);
-		nextBBnumber = 1;
+		
 		symbolTable = new SymbolTable();
 		nbTmpVar = 0;
 	}
@@ -148,7 +153,7 @@ public:
 	string get_var_type(string name);
 
 	// basic block management
-	string new_BB_name();
+	string new_bb_name();
 	BasicBlock *current_bb;
 	SymbolTable *symbolTable;
 
@@ -159,6 +164,8 @@ protected:
 	int nbTmpVar;
 
 	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
+
+	string functionName;
 
 private:
 	void gen_x86_prologue(ostream &o);

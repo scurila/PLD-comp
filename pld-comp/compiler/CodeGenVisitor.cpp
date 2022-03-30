@@ -52,9 +52,9 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 */
 	std::string type = context->type()->getText();
 	int type_size = typeSize(type);
-	int64_t type_mask = 0;   // mask of ones of the length of type_size*8, used to check value length
+	uint64_t type_mask = 0;   // mask of ones of the length of type_size*8, used to check value length
 	for(int i = 0; i < type_size * 8; i++) {
-		type_mask += (1 << i);
+		type_mask |= ((uint64_t)1) << i;
 	}
 
 	auto literals = context->LITERAL();
@@ -302,6 +302,7 @@ antlrcpp::Any CodeGenVisitor::visitCharExpr(ifccParser::CharExprContext *context
 	
     cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb,convert));
 	
+	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitCallFuncNoArgs(ifccParser::CallFuncNoArgsContext *context)  {
@@ -319,3 +320,89 @@ antlrcpp::Any CodeGenVisitor::visitCallFuncArgs(ifccParser::CallFuncArgsContext 
 
 	return 0;
 }
+
+
+antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext *context) {
+
+	auto exprs = context->expr();
+	auto instructions = context->instrblock();
+
+	BasicBlock *original_block = cfg->current_bb;
+	BasicBlock *end_block = new BasicBlock(cfg, cfg->new_bb_name());
+
+	for(int i = 0; i < instructions.size(); i++) {
+		auto instrCtx = instructions[i];
+		if( i < exprs.size() ) { // means we're in a if (...) or else if (...)
+			auto exprCtx = exprs[i];
+			cfg->current_bb = original_block;
+			visit(exprCtx);  // pushes boolean to the stack, result of evaluation
+		}
+		
+
+		// Add new basic block for this branch
+		auto bb = new BasicBlock(cfg, cfg->new_bb_name());
+		cfg->add_bb(bb);
+
+		// Generate branch code
+		cfg->current_bb = bb;
+		visit(instrCtx);
+
+		// Add branching logic to starting block
+		if ( i != exprs.size() ) {  // means we're reading an if or else if
+			original_block->add_IRInstr( new IRInstr_pushconst(original_block, 0) );
+			original_block->add_IRInstr( new IRInstr_jne(original_block, cfg->current_bb->label) );
+		}
+		else {  // means we're reading the else branch
+			// inconditionally jump to else block, as it is the default option
+			original_block->add_IRInstr( new IRInstr_jmp(original_block, cfg->current_bb->label) );
+		}
+
+		// jump to end block
+		cfg->current_bb->add_IRInstr( new IRInstr_jmp(cfg->current_bb, end_block->label) );
+	}
+
+	cfg->add_bb(end_block);
+	cfg->current_bb = end_block;
+
+/*
+	for(auto instrCtx : instructions) {
+		visit(exprCtx);
+		original_block->addIRInstr( push + jne )
+	}
+
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    std::vector<InstrblockContext *> instrblock();*/
+
+	return 0;
+}
+
+/*
+
+test              	| preceding code, leaves 0 or 1 on stack
+cmp test != 0 ?   	| pushconst + IR_jne ? voir si adaptation de cmpineq possible ?
+jne test_ok			|
+test2				|
+cmp test2 != 0 ?	|
+jne test2_ok		|
+test3				|
+cmp test3 != 0 ?	|
+jne test3			|
+[else code here]	|
+jmp endif			|
+
+test_ok:
+	jmp endif
+test2_ok:
+	jmp endif
+test3_ok:
+	jmp endif
+
+endif:
+	blabla
+
+
+
+
+
+*/

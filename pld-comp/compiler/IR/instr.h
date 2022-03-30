@@ -13,6 +13,8 @@
 #include "IRInstr_cmpge.h"
 #include "IRInstr_copy.h"
 #include "IRInstr_div.h"
+#include "IRInstr_jne.h"
+#include "IRInstr_jmp.h"
 #include "IRInstr_ldconst.h"
 #include "IRInstr_logicnot.h"
 #include "IRInstr_mul.h"

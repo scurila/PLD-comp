@@ -4,12 +4,12 @@ axiom : prog ;
 
 prog : 'int' 'main' '(' ')' instrblock ;
 
-instrblock: '{' instrlist '}' ;
+instrblock: '{' instrlist* '}' ;
 
-instrlist:  ( instr ';' | cf_struct ) (instrlist)* ;
+instrlist:  ( instr ';' | cflow_block ) (instrlist)* ;
 
-cf_struct:  
-     'if' '(' expr ')' instrblock ('else if' '(' expr ')' instrblock)* ('else' instrblock )? # IfElse
+cflow_block:  
+     'if' '(' expr ')' instrblock ('else if' '(' expr ')' instrblock)* ('else' instrblock )? # IfElseIfElse
      ;
 
 instr: RETURN expr   # ReturnExpr

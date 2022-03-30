@@ -47,7 +47,7 @@ int main(int argn, const char **argv)
         exit(1);
     }
 
-    CFG *main_cfg = new CFG();
+    CFG *main_cfg = new CFG("main");
     CodeGenVisitor v(main_cfg);
     v.visit(tree);
 

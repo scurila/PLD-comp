@@ -20,6 +20,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 		}
 		warningMessage(msg);
 	}
+
 	return childrenRes;
 }
 
@@ -48,13 +49,25 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	}
 */
 	std::string type = context->type()->getText();
+	int type_size = typeSize(type);
+	int64_t type_mask = 0;   // mask of ones of the length of type_size*8, used to check value length
+	for(int i = 0; i < type_size * 8; i++) {
+		type_mask += (1 << i);
+	}
+
 	auto literals = context->LITERAL();
 	auto values = context->CONST();
 	
 	auto valuesIt = begin(values);
 	for(auto itLit = begin(literals); itLit != end(literals); ++itLit) {
     	string literalName = (*itLit)->getText();
-		int64_t value = stoi( (*valuesIt)->getText() );
+		int64_t value = stoll( (*valuesIt)->getText() );
+
+		if((value & type_mask) != value) {
+			std::ostringstream stream;
+			stream << "Value " << value << " is too large to be stored in variable '" << literalName << "' (type " << type << "). Actual value will be truncated to " << (value & type_mask) << "."; 
+			warningMessage(stream.str());
+		}
 		
 		try {
 			funcCtxt.top().addEntry(literalName, type);
@@ -185,7 +198,7 @@ antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *c
 
 antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
-	int val = stoi(ctx->CONST()->getText());
+	int64_t val = stoll(ctx->CONST()->getText());
 	cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb, val));
 
     return 0;
@@ -224,26 +237,42 @@ antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *c
 	string op = context->children[1]->getText();
 
 	if (op == "=="){
-		//cfg->current_bb->add_IRInstr(new IRInstr);
+		cfg->current_bb->add_IRInstr(new IRInstr_cmpeq(cfg->current_bb));
 	}
 	else if (op == "<"){
-
+		cfg->current_bb->add_IRInstr(new IRInstr_cmplt(cfg->current_bb));
 	}
 	else if (op == "<="){
-		
+		cfg->current_bb->add_IRInstr(new IRInstr_cmple(cfg->current_bb));
 	}
 	else if (op == ">"){
-		
+		cfg->current_bb->add_IRInstr(new IRInstr_cmpgt(cfg->current_bb));
 	}
 	else if (op == ">="){
-		
+		cfg->current_bb->add_IRInstr(new IRInstr_cmpge(cfg->current_bb));
 	}
 	else if (op == "!="){
-		
+		cfg->current_bb->add_IRInstr(new IRInstr_cmpineq(cfg->current_bb));
 	}
 
     return 0;
 }
+
+antlrcpp::Any CodeGenVisitor::visitOperatorUnaryPrefix(ifccParser::OperatorUnaryPrefixContext *context) {
+	visit(context->children[1]);
+
+	string op = context->children[0]->getText();
+
+	if (op == "-") {
+		cfg->current_bb->add_IRInstr(new IRInstr_opp(cfg->current_bb));
+	}
+	else if (op == "!") {
+		cfg->current_bb->add_IRInstr(new IRInstr_logicnot(cfg->current_bb));
+	}
+	
+	return 0;
+}
+
 
 antlrcpp::Any CodeGenVisitor::visitOperatorBinary(ifccParser::OperatorBinaryContext *context) {
 	visit(context->children[0]);// pushes result in the stack 

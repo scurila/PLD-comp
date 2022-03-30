@@ -1,19 +1,20 @@
 #include "SymbolTable.h"
 #include "Exceptions.h"
+#include "Utils.h"
 
 using namespace std;
 
 bool SymbolTable::addEntry(string name, string type) {
-	int size = 4;
-	for (int i = 0; i < sizeof(VarTypeName)/sizeof(VarTypeName[0]) ; i++) { 
-		if (type == VarTypeName[i]) {
-			size = VarTypeSize[i];
-		}
-	}
+	int size = typeSize(type);
+
     if (table.find(name) == table.end()) {
 		// on crée la var°
-		table.insert(make_pair(name, new Entry(name, type, topOffset + size, size)));
-        topOffset += size;
+		if(topOffset % size != 0) {
+			topOffset += size - (topOffset % size);
+		}
+
+		table.insert(make_pair(name, new Entry(name, type, topOffset, size)));
+		topOffset += size;
         return true; 
 	} else {
 		// la var° a déjà été déclarée dans ce scope

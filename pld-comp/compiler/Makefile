@@ -66,3 +66,4 @@ gui:
 clean:
 	rm -rf build generated
 	rm -f ifcc
+

@@ -79,9 +79,11 @@ void CFG::gen_x86_prologue(ostream &o){
     o   << "  pushq %rbp\n"
         << "  movq %rsp, %rbp\n";
 
+    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+
     	// TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
     o   << "  movq %rsp, %rax\n"
-    	<< "  subq $" << symbolTable->topOffset << ", %rax\n"
+    	<< "  subq $" << alignedTopOffset << ", %rax\n"
     	<< "  movq %rax, %rsp\n";
 
 }
@@ -89,9 +91,11 @@ void CFG::gen_x86_prologue(ostream &o){
 void CFG::gen_x86_epilogue(ostream &o){
     o  << "  popq %rax\n";  // pop returned value to rax
 
+    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+
 	o   // move rsp to pop rbp later
 		<< "  movq %rsp, %rbx\n"
-		<< "  addq $" << symbolTable->topOffset << ", %rbx\n"
+		<< "  addq $" << alignedTopOffset << ", %rbx\n"
 		<< "  movq %rbx, %rsp\n";
 
 	o  // restore rsp (and remove rbp from stack)
@@ -100,6 +104,7 @@ void CFG::gen_x86_epilogue(ostream &o){
 }
 
 void CFG::gen_arm_prologue(ostream &o){
+    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
     o << ".section	__TEXT,__text,regular,pure_instructions\n";
     o   << ".build_version macos, 12, 0	sdk_version 12, 3\n"
         << ".globl	_main                           ; -- Begin function main\n"
@@ -108,16 +113,19 @@ void CFG::gen_arm_prologue(ostream &o){
         << ".cfi_startproc\n"
         << "; %bb.0:\n"
         // TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
-        << "sub	sp, sp, #100\n"
-        << ".cfi_def_cfa_offset 100\n";
+        << "sub	sp, sp, #" << alignedTopOffset << "\n"
+        << "stp x29, x30, [sp, #" << alignedTopOffset - 16 << "]\n" // on stocke frame pointer & return pointer en base de la pile (16 oct) ==  16-byte folded spill
+        << "add x29, sp, #" << alignedTopOffset - 16 << "\n" // on place le rbp en bas pile (mais au dessus des 2 backups à ne pas écraser)
+        << ".cfi_def_cfa_offset " << alignedTopOffset << "\n";
         // todo : change when functions supported
 }
 
 void CFG::gen_arm_epilogue(ostream &o){
+    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
 	o
-    // todo : 100 temp
-        << "pop {w0}\n"
-		<< "add sp, sp, #100\n"
+        << "ldp x29, x30, [sp, #" << alignedTopOffset - 16 << "]\n" // restaure x29 x30 == 16-byte folded reload
+        << "ldr w0, [sp], #4\n" // POP w0 : lire [sp], puis pop de 4 (wX 32 bits)
+		<< "add sp, sp, #" << alignedTopOffset << "\n"
 		<< "ret\n"
 		<< ".cfi_endproc\n"
         << ".subsections_via_symbols\n";

@@ -23,7 +23,7 @@ class Entry {
 
 class SymbolTable {
     public:
-        SymbolTable() : topOffset(16) {}; // default to 16 for the backup of the frame variables
+        SymbolTable() : topOffset(0) {}; // default to 16 for the backup of the frame variables
         bool addEntry(string name, string type);
         Entry* get(string name);
         vector<string> unusedVars();

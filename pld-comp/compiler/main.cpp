@@ -28,7 +28,7 @@ int main(int argn, const char **argv)
         exit(1);
     }
 
-    Arch selectedArch = arm;
+    Arch selectedArch = x86;
 
 
     ANTLRInputStream input(in.str());

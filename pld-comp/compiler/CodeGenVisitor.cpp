@@ -1,8 +1,10 @@
 #include "CodeGenVisitor.h"
 #include "IR/IRInstr_binand.h"
+#include "IR/IRInstr_pushconst.h"
 #include "Utils.h"
 #include "Exceptions.h"
 #include "IR/instr.h"
+#include <cstdint>
 #include <string>
 #include <stack>
 
@@ -204,7 +206,7 @@ antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitOperatorMultDiv(ifccParser::OperatorMultDivContext *context) { 
+antlrcpp::Any CodeGenVisitor::visitOperatorMultDivMod(ifccParser::OperatorMultDivModContext *context) { 
 	visit(context->children[0]);// pushes result in the stack 
 	visit(context->children[2]);// pushes result in the stack 
 
@@ -215,6 +217,9 @@ antlrcpp::Any CodeGenVisitor::visitOperatorMultDiv(ifccParser::OperatorMultDivCo
 	}
 	else if(op == "/") {
 		cfg->current_bb->add_IRInstr(new IRInstr_div(cfg->current_bb));
+	}
+	else if(op == "%") {
+		cfg->current_bb->add_IRInstr(new IRInstr_mod(cfg->current_bb));
 	}
 
 	return 0;
@@ -286,5 +291,15 @@ antlrcpp::Any CodeGenVisitor::visitOperatorBinary(ifccParser::OperatorBinaryCont
 		cfg->current_bb->add_IRInstr(new IRInstr_binor(cfg->current_bb));
 	}
 
+	return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitCharExpr(ifccParser::CharExprContext *context) {
+	std::string charac = context->CHAR()->getText();
+	
+	int64_t convert = (int64_t) charac[1];
+	
+    cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb,convert));
+	
 	return 0;
 }

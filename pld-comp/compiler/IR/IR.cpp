@@ -77,6 +77,9 @@ void CFG::gen_x86_prologue(ostream &o){
             << "main: \n";
     #endif
     o   << "  pushq %rbp\n"
+        << "  pushq %rsi\n"
+        << "  pushq %rdi\n"
+        << "  pushq %rbx\n"
         << "  movq %rsp, %rbp\n";
 
     int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
@@ -99,7 +102,10 @@ void CFG::gen_x86_epilogue(ostream &o){
 		<< "  movq %rbx, %rsp\n";
 
 	o  // restore rsp (and remove rbp from stack)
-		<< "  popq %rbp\n"
+		<< "  popq %rbx\n"
+        << "  popq %rdi\n"
+        << "  popq %rsi\n"
+        << "  popq %rbp\n"
 		<< "  ret\n";
 }
 

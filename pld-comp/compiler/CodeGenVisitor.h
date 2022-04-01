@@ -17,6 +17,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 		
 		virtual antlrcpp::Any visitReturnExpr(ifccParser::ReturnExprContext *context) override;
 
+		virtual antlrcpp::Any visitReturnVoid(ifccParser::ReturnVoidContext *ctx) override;
+
 		virtual antlrcpp::Any visitInitVarConst(ifccParser::InitVarConstContext *context) override;
 
 		virtual antlrcpp::Any visitDeclareVar(ifccParser::DeclareVarContext *context) override;  
@@ -57,6 +59,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
   		virtual antlrcpp::Any visitCallFuncArgs(ifccParser::CallFuncArgsContext *ctx) override;
 
 		virtual antlrcpp::Any visitIfElseIfElse(ifccParser::IfElseIfElseContext *ctx) override;
+
+		virtual antlrcpp::Any visitWhileLoop(ifccParser::WhileLoopContext *ctx) override;
 		
 		// TEMPORAIRE
 		stack<SymbolTable> funcCtxt;

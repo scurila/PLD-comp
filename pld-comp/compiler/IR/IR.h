@@ -46,6 +46,7 @@ public:
 		cmp_ge,
 		cmp_ineq,
 		jmp,
+		je,
 		jne,
 		popvar,
 		pushvar,
@@ -99,15 +100,15 @@ Possible optimization:
 class BasicBlock
 {
 public:
-	BasicBlock(CFG *cfg, string entry_label): cfg(cfg), label(entry_label) {}
+	BasicBlock(CFG *cfg, string entry_label): cfg(cfg), label(entry_label), default_next_block(nullptr) {}
 	
 	void gen_asm(ostream &o, Arch arch); 
 
 	void add_IRInstr(IRInstr *instr);
 
 	// No encapsulation whatsoever here. Feel free to do better.
-	BasicBlock *exit_true;	  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
-	BasicBlock *exit_false;	  /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
+	BasicBlock *default_next_block;  /** if nullptr, epilogue will be next. otherwise, generates an inconditional jump to this block */
+
 	string label;			  /**< label of the BB, also will be the label in the generated code */
 	CFG *cfg;				  /** < the CFG where this block belongs */
 	vector<IRInstr *> instrs; /** < the instructions themselves. */
@@ -145,6 +146,8 @@ public:
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	void gen_prologue(ostream &o, Arch arch);
 	void gen_epilogue(ostream &o, Arch arch);
+
+	string get_epilogue_label(Arch arch);
 
 	// symbol table methods
 	void add_to_symbol_table(string name, string type);

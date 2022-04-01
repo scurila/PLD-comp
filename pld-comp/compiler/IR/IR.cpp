@@ -92,7 +92,7 @@ void CFG::gen_x86_prologue(ostream &o){
 }
 
 void CFG::gen_x86_epilogue(ostream &o){
-    o  << "  popq %rax\n";  // pop returned value to rax
+    o  << get_epilogue_label(x86) << ":\n";
 
     int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
 
@@ -128,13 +128,18 @@ void CFG::gen_arm_prologue(ostream &o){
 
 void CFG::gen_arm_epilogue(ostream &o){
     int alignedTopOffset = symbolTable->topOffset +  (16 - (symbolTable->topOffset % 16));
+    
+    o  << get_epilogue_label(arm) << ":\n";
 	o
-    << "ldr x0, [sp], #16\n" // POP w0 : lire [sp], puis pop de 4 (wX 32 bits)
         << "ldp x29, x30, [sp, #" << alignedTopOffset << "]\n" // restaure x29 x30 (pas le +16 - les 16 derniers oct) == 16-byte folded reload
 		<< "add sp, sp, #" << alignedTopOffset + 16 << "\n" // + les 16 de la backup 
 		<< "ret\n"
 		<< ".cfi_endproc\n"
         << ".subsections_via_symbols\n";
+}
+
+string CFG::get_epilogue_label(Arch arch) {
+    return  "." + functionName + "_epilogue";
 }
 
 void CFG::add_to_symbol_table(string name, string type){
@@ -174,6 +179,15 @@ void BasicBlock::gen_asm(ostream &o, Arch arch)
     for( int i = 0; i < instrs.size(); i++){
         IRInstr* instr = instrs[i];
         instr->gen_asm(o, arch);
+    }
+
+    if(default_next_block) {
+        if(arch == x86) {
+            o << "  jmp " << default_next_block->label << "\n";
+        }
+        else if (arch == arm) {
+            o << "  bl " << default_next_block->label << "\n";
+        }
     }
 }
 

@@ -31,7 +31,14 @@ antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *con
 {
 	visit(context->children[1]); // visit expr
 
-	// TODO ? for now, handling of returned value is made through the stack (last element pushed), and read in the epilogue
+	cfg->current_bb->add_IRInstr(new IRInstr_return(cfg->current_bb, true));
+
+	return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitReturnVoid(ifccParser::ReturnVoidContext *ctx)
+{
+	cfg->current_bb->add_IRInstr(new IRInstr_return(cfg->current_bb, false));
 
 	return 0;
 }
@@ -104,17 +111,6 @@ antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *con
 
 	return 0;
 }
-/*
-antlrcpp::Any CodeGenVisitor::visitLiterallist(ifccParser::LiterallistContext *context) 
-{
-	std::cout << "# literal list element\n";
-
-	std::string literalName = context->LITERAL()->getText();
-	
-	funcCtxt.top().addEntry(literalName, currentChainedDeclarationType, typeSize(currentChainedDeclarationType));
-
-	return visitChildren(context);
-}*/
 
 antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *context)
 {
@@ -177,17 +173,7 @@ antlrcpp::Any CodeGenVisitor::visitOperatorAddSub(ifccParser::OperatorAddSubCont
 	}
 
 	return 0; 
- }
-/*
-antlrcpp::Any CodeGenVisitor::visitOperatorSub(ifccParser::OperatorSubContext *context) {
-
-	visit(context->children[0]);// pushes result in the stack 
-	visit(context->children[2]);// pushes result in the stack
-
-	cfg->current_bb->add_IRInstr(new IRInstr_sub(cfg->current_bb));
-    return 0;
-}*/
-
+}
 
 antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *context) {
 	std::string literal = context->LITERAL()->getText();
@@ -196,7 +182,7 @@ antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *c
     cfg->current_bb->add_IRInstr(new IRInstr_pushvar(cfg->current_bb,literal));
 
 	return 0;
- }
+}
 
 antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
@@ -224,17 +210,6 @@ antlrcpp::Any CodeGenVisitor::visitOperatorMultDivMod(ifccParser::OperatorMultDi
 
 	return 0;
 }
-
-
-/*antlrcpp::Any CodeGenVisitor::visitOperatorDiv(ifccParser::OperatorDivContext *context) { 
-
-	visit(context->children[0]);// pushes result in the stack 
-	visit(context->children[2]);// pushes result in the stack
-
-	cfg->current_bb->add_IRInstr(new IRInstr_div(cfg->current_bb));
-
-	return 0;
-}*/
 
 antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *context) {
 	visit(context->children[0]);// pushes result in the stack 
@@ -324,11 +299,13 @@ antlrcpp::Any CodeGenVisitor::visitCallFuncArgs(ifccParser::CallFuncArgsContext 
 
 antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext *context) {
 
-	auto exprs = context->expr();
-	auto instructions = context->instrblock();
+	auto exprs = context->expr();  // list of expressions (might be size of instructions list - 1, because there can be an 'else' block)
+	auto instructions = context->instrblock();  // list of instruction blocks
 
-	BasicBlock *original_block = cfg->current_bb;
-	BasicBlock *end_block = new BasicBlock(cfg, cfg->new_bb_name());
+	BasicBlock *original_block = cfg->current_bb;  // block from which we're branching
+	BasicBlock *end_block = new BasicBlock(cfg, cfg->new_bb_name()); // block in which the instruction flow will continue (all branches points to it)
+
+	bool else_block = false;  // used to determine if the original_block needs to branch to an else block or to the end_block
 
 	for(int i = 0; i < instructions.size(); i++) {
 		auto instrCtx = instructions[i];
@@ -341,6 +318,7 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 
 		// Add new basic block for this branch
 		auto bb = new BasicBlock(cfg, cfg->new_bb_name());
+		bb->default_next_block = end_block; // will generate a jump to end_block at the end of this block
 		cfg->add_bb(bb);
 
 		// Generate branch code
@@ -354,55 +332,73 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 		}
 		else {  // means we're reading the else branch
 			// inconditionally jump to else block, as it is the default option
-			original_block->add_IRInstr( new IRInstr_jmp(original_block, cfg->current_bb->label) );
+			original_block->default_next_block = cfg->current_bb;
+			else_block = true;
 		}
+	}
 
-		// jump to end block
-		cfg->current_bb->add_IRInstr( new IRInstr_jmp(cfg->current_bb, end_block->label) );
+	if(!else_block) { // means we need to branch directly to end_block at the end of original_block
+		original_block->default_next_block = end_block;
 	}
 
 	cfg->add_bb(end_block);
 	cfg->current_bb = end_block;
 
-/*
-	for(auto instrCtx : instructions) {
-		visit(exprCtx);
-		original_block->addIRInstr( push + jne )
-	}
-
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
-    std::vector<InstrblockContext *> instrblock();*/
-
 	return 0;
 }
 
-/*
+antlrcpp::Any CodeGenVisitor::visitWhileLoop(ifccParser::WhileLoopContext *context) {
 
-test              	| preceding code, leaves 0 or 1 on stack
-cmp test != 0 ?   	| pushconst + IR_jne ? voir si adaptation de cmpineq possible ?
-jne test_ok			|
-test2				|
-cmp test2 != 0 ?	|
-jne test2_ok		|
-test3				|
-cmp test3 != 0 ?	|
-jne test3			|
-[else code here]	|
-jmp endif			|
+	auto expr = context->expr();
+	auto instructions = context->instrblock();
 
-test_ok:
-	jmp endif
-test2_ok:
-	jmp endif
-test3_ok:
-	jmp endif
+	BasicBlock *original_block = cfg->current_bb;  // block from which we're branching
+	
+	BasicBlock *while_start = new BasicBlock(cfg, cfg->new_bb_name()); // block for while condition check and instructions
+	BasicBlock *end_block = new BasicBlock(cfg, cfg->new_bb_name()); // block to jump to when while condition does not check anymore
 
-endif:
-	blabla
+	original_block->default_next_block = while_start; // connect previous intruction flow with start of while
+	while_start->default_next_block = while_start; // should jump to itself to loop
+	
+	// begin while code
+	cfg->current_bb = while_start;
+
+	// while condition evaluation
+	visit(expr); 
+
+	// check condition ; if evaluation returned 0, jump to end_block
+	while_start->add_IRInstr( new IRInstr_pushconst(while_start, 0) );
+	while_start->add_IRInstr( new IRInstr_je(while_start, end_block->label) );
+
+	// add while body after condition check
+	visit(instructions);
+
+	// loop jump will be generated automatically, as we set default_next_block
+
+	cfg->add_bb(while_start);
+	cfg->add_bb(end_block);
+
+	cfg->current_bb = end_block;
+
+	return 0;
+	/*
+
+		while_begin:
+			test
+			cmp res, $0
+			je while_end   # condition is false, leave
+
+			while_body
+			{
+				if meets continue in instrbody:
+					jmp 
+			}
+
+			jmp while_begin
+		
+		while_end:
+			continue with normal code
 
 
-
-
-
-*/
+	*/
+}

@@ -6,13 +6,15 @@ prog : 'int' 'main' '(' ')' instrblock ;
 
 instrblock: '{' instrlist* '}' ;
 
-instrlist:  ( instr ';' | cflow_block ) (instrlist)* ;
+instrlist:  ( instr ';' | cflow_block | instrblock ) (instrlist)* ;
 
 cflow_block:  
      'if' '(' expr ')' instrblock ('else if' '(' expr ')' instrblock)* ('else' instrblock )? # IfElseIfElse
+     | 'while' '(' expr ')' instrblock  # WhileLoop
      ;
 
 instr: RETURN expr   # ReturnExpr
+     | RETURN  # ReturnVoid
      | type LITERAL '('')' #CallFuncNoArgs
      | type LITERAL '(' expr (',' expr)* ')' #CallFuncArgs
      | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst

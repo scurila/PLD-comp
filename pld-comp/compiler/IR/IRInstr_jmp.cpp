@@ -8,5 +8,5 @@ void IRInstr_jmp::gen_x86(ostream &o)
 
 void IRInstr_jmp::gen_arm(ostream &o)
 {
-
+    o << "  bl" << jumpLabel << "\n";
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <unordered_set>
 
 using namespace std;
 
@@ -27,8 +28,21 @@ class SymbolTable {
         bool addEntry(string name, string type);
         Entry* get(string name);
         vector<string> unusedVars();
+
+        void push_context();
+        void pop_context();
+
         int topOffset;
+
     protected: 
-        unordered_map<string, Entry*> table;
-        
+        vector<unordered_map<string, Entry*>*> table;
+
+    private:
+        // only stores names for popped contexts. need to call unusedVars() to get the full list
+        unordered_set<string> unusedVarNames; // not very clean as shadowed variables won't be dissociated
+
+        Entry* get(string name, int layer);
 };
+
+
+// TODO need global map for global variables, as symbol tables are differentiated between functions

@@ -10,10 +10,9 @@
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {
-	funcCtxt.push(SymbolTable());
 	antlrcpp::Any childrenRes = visitChildren(ctx);
 	// verif stack de la fonction toutes vars utilisées - sinon warning
-	vector<string> unusedVars = funcCtxt.top().unusedVars();
+	vector<string> unusedVars = cfg->symbolTable->unusedVars();
 	if (!unusedVars.empty()) {
 		string msg = "Dans ce contexte, la ou les variables suivantes on été déclarées mais n'ont pas été utilisées : ";
 		for (vector<string>::iterator it=unusedVars.begin(); it!=unusedVars.end(); ++it) {
@@ -26,6 +25,16 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 	return childrenRes;
 }
 
+antlrcpp::Any CodeGenVisitor::visitInstrblock(ifccParser::InstrblockContext *context) 
+{
+	cfg->symbolTable->push_context(); // push new inner scope
+
+	auto childrenRes = visitChildren(context);
+
+	cfg->symbolTable->pop_context(); // leave inner scope
+
+	return childrenRes;
+}
 		
 antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *context) 
 {
@@ -45,18 +54,6 @@ antlrcpp::Any CodeGenVisitor::visitReturnVoid(ifccParser::ReturnVoidContext *ctx
 
 antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext *context)
 {
-	/*int cteVal = stoi(context->CONST()->getText());
-	std::string literalName = context->LITERAL()->getText();
-
-	try {
-		funcCtxt.top().addEntry(literalName, context->type()->getText());
-		std::cout
-			<< "  movl $" << cteVal << ", " << (-1 * funcCtxt.top().get(literalName)->bp_offset) << "(%rbp)\n";
-	} catch (DeclaredVarException e) {
-		errorMessage(e.message());
-		// todo : return différent ? 
-	}
-*/
 	std::string type = context->type()->getText();
 	int type_size = typeSize(type);
 	uint64_t type_mask = 0;   // mask of ones of the length of type_size*8, used to check value length
@@ -79,11 +76,8 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 		}
 		
 		try {
-			funcCtxt.top().addEntry(literalName, type);
 			cfg->symbolTable->addEntry(literalName, type);
-
 			cfg->current_bb->add_IRInstr(new IRInstr_ldconst(cfg->current_bb, literalName, value));
-
 		} catch (DeclaredVarException e) {
 			errorMessage(e.message());
 			// todo : return différent ? 
@@ -101,7 +95,6 @@ antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *con
 	for(auto it = begin(literals); it != end(literals); ++it) {
     	string literalName = (*it)->getText();
 		try {
-			funcCtxt.top().addEntry(literalName, type);
 			cfg->symbolTable->addEntry(literalName, type);
 		} catch (DeclaredVarException e) {
 			errorMessage(e.message());
@@ -114,8 +107,6 @@ antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *con
 
 antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *context)
 {
-
-	
 	string var1 = context->LITERAL()[0]->getText();
 	string var2 = context->LITERAL()[1]->getText();
 
@@ -133,9 +124,7 @@ antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *c
 	
 	try {
 		std::string literal = context->LITERAL()->getText();
-		int index = funcCtxt.top().get(literal)->bp_offset;
 		cfg->current_bb->add_IRInstr(new IRInstr_ldconst(cfg->current_bb, literal, stoi(context->CONST()->getText())));
-
 	} catch (UndeclaredVarException e) {
 		errorMessage(e.message());
 	}
@@ -177,7 +166,6 @@ antlrcpp::Any CodeGenVisitor::visitOperatorAddSub(ifccParser::OperatorAddSubCont
 
 antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *context) {
 	std::string literal = context->LITERAL()->getText();
-	Entry *literalEntry = funcCtxt.top().get(literal);
 
     cfg->current_bb->add_IRInstr(new IRInstr_pushvar(cfg->current_bb,literal));
 

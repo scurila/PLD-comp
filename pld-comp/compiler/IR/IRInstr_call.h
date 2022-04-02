@@ -7,6 +7,7 @@ class IRInstr_call : public IRInstr {
     public:
         IRInstr_call(BasicBlock *bb_, string funcname, int nbparam) : IRInstr(bb_, call, "") {
             nbparam=nbparam;
+            funcname=funcname;
         };
         
         void gen_x86(ostream &o) override; /** < x86 assembly code generation for this IR instruction */
@@ -14,4 +15,5 @@ class IRInstr_call : public IRInstr {
 
     private:
         int nbparam;
+        string funcname;
 };

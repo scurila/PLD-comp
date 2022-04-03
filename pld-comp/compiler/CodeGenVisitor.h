@@ -5,15 +5,17 @@
 #include "generated/ifccBaseVisitor.h"
 #include "SymbolTable.h"
 #include "IR/IR.h"
+#include "Program.h"
+
 #include <stack>
 
 
 class  CodeGenVisitor : public ifccBaseVisitor {
 	public:
 
-        CodeGenVisitor(CFG *cfg): cfg(cfg) {};
+        CodeGenVisitor(Program *program): program(program) {};
 
-		virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override ;
+		virtual antlrcpp::Any visitMain(ifccParser::MainContext *ctx) override ;
 
 		virtual antlrcpp::Any visitInstrblock(ifccParser::InstrblockContext *ctx) override;
 		
@@ -63,7 +65,12 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 		virtual antlrcpp::Any visitIfElseIfElse(ifccParser::IfElseIfElseContext *ctx) override;
 
 		virtual antlrcpp::Any visitWhileLoop(ifccParser::WhileLoopContext *ctx) override;
+	
+	private:
+		// Alias methods for lighter code
+		CFG* cur_cfg() const { return program->current_cfg; }
+		void set_cfg(CFG *cfg) { program->current_cfg = cfg; }
 
-		CFG *cfg;
+		Program *program;
 };
 

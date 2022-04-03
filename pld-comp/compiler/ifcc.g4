@@ -1,8 +1,10 @@
 grammar ifcc;
 
-axiom : prog ;
+axiom : main | function ;
 
-prog : 'int' 'main' '(' ')' instrblock ;
+main: 'int' 'main' '(' ')' instrblock ;
+
+function: type LITERAL '(' (expr (',' expr)* )? ')' instrblock # DeclareFunc ;
 
 instrblock: '{' instrlist* '}' ;
 

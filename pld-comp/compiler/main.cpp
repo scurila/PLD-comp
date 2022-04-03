@@ -10,6 +10,7 @@
 
 #include "CodeGenVisitor.h"
 #include "IR/IR.h"
+#include "Program.h"
 
 using namespace antlr4;
 using namespace std;
@@ -47,13 +48,12 @@ int main(int argn, const char **argv)
         exit(1);
     }
 
-    CFG *main_cfg = new CFG("main");
-    CodeGenVisitor v(main_cfg);
+    Program *program = new Program();
+
+    CodeGenVisitor v(program);
     v.visit(tree);
 
-	main_cfg->gen_prologue(std::cout, selectedArch);
-	main_cfg->gen_asm(std::cout, selectedArch);
-	main_cfg->gen_epilogue(std::cout, selectedArch);
+	program->gen_asm(std::cout, selectedArch);
 
     return 0;
 }

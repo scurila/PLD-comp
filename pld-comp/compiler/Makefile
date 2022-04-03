@@ -12,8 +12,8 @@ all: ifcc
 
 ##########################################
 # link together all pieces of our compiler 
-SOURCES=$(wildcard IR/*.cpp)
-OBJECTS=build/main.o build/SymbolTable.o build/CodeGenVisitor.o build/ifccBaseVisitor.o build/ifccLexer.o build/ifccVisitor.o build/ifccParser.o build/Utils.o $(SOURCES:%.cpp=build/%.o)
+SOURCES=$(wildcard IR/*.cpp) main.cpp SymbolTable.cpp Utils.cpp CodeGenVisitor.cpp Program.cpp
+OBJECTS=build/ifccBaseVisitor.o build/ifccLexer.o build/ifccVisitor.o build/ifccParser.o $(SOURCES:%.cpp=build/%.o)
 
 ifcc: $(OBJECTS)
 	@mkdir -p build/IR

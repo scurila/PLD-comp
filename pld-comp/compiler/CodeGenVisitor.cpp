@@ -8,11 +8,15 @@
 #include <string>
 #include <stack>
 
-antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx) 
+antlrcpp::Any CodeGenVisitor::visitMain(ifccParser::MainContext *ctx) 
 {
+	CFG *main_cfg = new CFG("main");
+	program->add_cfg(main_cfg);
+	set_cfg(main_cfg);
+
 	antlrcpp::Any childrenRes = visitChildren(ctx);
 	// verif stack de la fonction toutes vars utilisées - sinon warning
-	vector<string> unusedVars = cfg->symbolTable->unusedVars();
+	vector<string> unusedVars = cur_cfg()->symbolTable->unusedVars();
 	if (!unusedVars.empty()) {
 		string msg = "Dans ce contexte, la ou les variables suivantes on été déclarées mais n'ont pas été utilisées : ";
 		for (vector<string>::iterator it=unusedVars.begin(); it!=unusedVars.end(); ++it) {
@@ -27,11 +31,11 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 
 antlrcpp::Any CodeGenVisitor::visitInstrblock(ifccParser::InstrblockContext *context) 
 {
-	cfg->symbolTable->push_context(); // push new inner scope
+	cur_cfg()->symbolTable->push_context(); // push new inner scope
 
 	auto childrenRes = visitChildren(context);
 
-	cfg->symbolTable->pop_context(); // leave inner scope
+	cur_cfg()->symbolTable->pop_context(); // leave inner scope
 
 	return childrenRes;
 }
@@ -40,14 +44,14 @@ antlrcpp::Any CodeGenVisitor::visitReturnExpr(ifccParser::ReturnExprContext *con
 {
 	visit(context->children[1]); // visit expr
 
-	cfg->current_bb->add_IRInstr(new IRInstr_return(cfg->current_bb, true));
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_return(cur_cfg()->current_bb, true));
 
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitReturnVoid(ifccParser::ReturnVoidContext *ctx)
 {
-	cfg->current_bb->add_IRInstr(new IRInstr_return(cfg->current_bb, false));
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_return(cur_cfg()->current_bb, false));
 
 	return 0;
 }
@@ -76,8 +80,8 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 		}
 		
 		try {
-			cfg->symbolTable->addEntry(literalName, type);
-			cfg->current_bb->add_IRInstr(new IRInstr_ldconst(cfg->current_bb, literalName, value));
+			cur_cfg()->symbolTable->addEntry(literalName, type);
+			cur_cfg()->current_bb->add_IRInstr(new IRInstr_ldconst(cur_cfg()->current_bb, literalName, value));
 		} catch (DeclaredVarException e) {
 			errorMessage(e.message());
 			// todo : return différent ? 
@@ -95,7 +99,7 @@ antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *con
 	for(auto it = begin(literals); it != end(literals); ++it) {
     	string literalName = (*it)->getText();
 		try {
-			cfg->symbolTable->addEntry(literalName, type);
+			cur_cfg()->symbolTable->addEntry(literalName, type);
 		} catch (DeclaredVarException e) {
 			errorMessage(e.message());
 			// todo : return différent ? 
@@ -111,7 +115,7 @@ antlrcpp::Any CodeGenVisitor::visitAssignVar(ifccParser::AssignVarContext *conte
 	string var2 = context->LITERAL()[1]->getText();
 
 	try {
-	    cfg->current_bb->add_IRInstr(new IRInstr_copy(cfg->current_bb, var1, var2));
+	    cur_cfg()->current_bb->add_IRInstr(new IRInstr_copy(cur_cfg()->current_bb, var1, var2));
 	} catch (UndeclaredVarException e) {
 		errorMessage(e.message());
 		// todo : return différent ? 
@@ -124,7 +128,7 @@ antlrcpp::Any CodeGenVisitor::visitAssignConst(ifccParser::AssignConstContext *c
 	
 	try {
 		std::string literal = context->LITERAL()->getText();
-		cfg->current_bb->add_IRInstr(new IRInstr_ldconst(cfg->current_bb, literal, stoi(context->CONST()->getText())));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_ldconst(cur_cfg()->current_bb, literal, stoi(context->CONST()->getText())));
 	} catch (UndeclaredVarException e) {
 		errorMessage(e.message());
 	}
@@ -138,7 +142,7 @@ antlrcpp::Any CodeGenVisitor::visitAssignExpr(ifccParser::AssignExprContext *con
 
 	std::string literal = context->LITERAL()->getText();
 
-    cfg->current_bb->add_IRInstr(new IRInstr_popvar(cfg->current_bb, literal));
+    cur_cfg()->current_bb->add_IRInstr(new IRInstr_popvar(cur_cfg()->current_bb, literal));
 
 	return 0;
 }
@@ -155,10 +159,10 @@ antlrcpp::Any CodeGenVisitor::visitOperatorAddSub(ifccParser::OperatorAddSubCont
 	string op = context->children[1]->getText();
 
 	if(op == "+") {
-    	cfg->current_bb->add_IRInstr(new IRInstr_add(cfg->current_bb));
+    	cur_cfg()->current_bb->add_IRInstr(new IRInstr_add(cur_cfg()->current_bb));
 	}
 	else if(op == "-") {
-		cfg->current_bb->add_IRInstr(new IRInstr_sub(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_sub(cur_cfg()->current_bb));
 	}
 
 	return 0; 
@@ -167,7 +171,7 @@ antlrcpp::Any CodeGenVisitor::visitOperatorAddSub(ifccParser::OperatorAddSubCont
 antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *context) {
 	std::string literal = context->LITERAL()->getText();
 
-    cfg->current_bb->add_IRInstr(new IRInstr_pushvar(cfg->current_bb,literal));
+    cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb,literal));
 
 	return 0;
 }
@@ -175,7 +179,7 @@ antlrcpp::Any CodeGenVisitor::visitLiteralExpr(ifccParser::LiteralExprContext *c
 antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
 	int64_t val = stoll(ctx->CONST()->getText());
-	cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb, val));
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushconst(cur_cfg()->current_bb, val));
 
     return 0;
 }
@@ -187,13 +191,13 @@ antlrcpp::Any CodeGenVisitor::visitOperatorMultDivMod(ifccParser::OperatorMultDi
 	string op = context->children[1]->getText();
 
 	if(op == "*") {
-    	cfg->current_bb->add_IRInstr(new IRInstr_mul(cfg->current_bb));
+    	cur_cfg()->current_bb->add_IRInstr(new IRInstr_mul(cur_cfg()->current_bb));
 	}
 	else if(op == "/") {
-		cfg->current_bb->add_IRInstr(new IRInstr_div(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_div(cur_cfg()->current_bb));
 	}
 	else if(op == "%") {
-		cfg->current_bb->add_IRInstr(new IRInstr_mod(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_mod(cur_cfg()->current_bb));
 	}
 
 	return 0;
@@ -205,22 +209,22 @@ antlrcpp::Any CodeGenVisitor::visitOperatorCmp(ifccParser::OperatorCmpContext *c
 	string op = context->children[1]->getText();
 
 	if (op == "=="){
-		cfg->current_bb->add_IRInstr(new IRInstr_cmpeq(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_cmpeq(cur_cfg()->current_bb));
 	}
 	else if (op == "<"){
-		cfg->current_bb->add_IRInstr(new IRInstr_cmplt(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_cmplt(cur_cfg()->current_bb));
 	}
 	else if (op == "<="){
-		cfg->current_bb->add_IRInstr(new IRInstr_cmple(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_cmple(cur_cfg()->current_bb));
 	}
 	else if (op == ">"){
-		cfg->current_bb->add_IRInstr(new IRInstr_cmpgt(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_cmpgt(cur_cfg()->current_bb));
 	}
 	else if (op == ">="){
-		cfg->current_bb->add_IRInstr(new IRInstr_cmpge(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_cmpge(cur_cfg()->current_bb));
 	}
 	else if (op == "!="){
-		cfg->current_bb->add_IRInstr(new IRInstr_cmpineq(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_cmpineq(cur_cfg()->current_bb));
 	}
 
     return 0;
@@ -232,10 +236,10 @@ antlrcpp::Any CodeGenVisitor::visitOperatorUnaryPrefix(ifccParser::OperatorUnary
 	string op = context->children[0]->getText();
 
 	if (op == "-") {
-		cfg->current_bb->add_IRInstr(new IRInstr_opp(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_opp(cur_cfg()->current_bb));
 	}
 	else if (op == "!") {
-		cfg->current_bb->add_IRInstr(new IRInstr_logicnot(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_logicnot(cur_cfg()->current_bb));
 	}
 	
 	return 0;
@@ -248,10 +252,10 @@ antlrcpp::Any CodeGenVisitor::visitOperatorBinary(ifccParser::OperatorBinaryCont
 	string op = context->children[1]->getText();
 
 	if (op == "&"){
-		cfg->current_bb->add_IRInstr(new IRInstr_binand(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_binand(cur_cfg()->current_bb));
 	}
 	else if (op == "|"){
-		cfg->current_bb->add_IRInstr(new IRInstr_binor(cfg->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_binor(cur_cfg()->current_bb));
 	}
 
 	return 0;
@@ -263,14 +267,14 @@ antlrcpp::Any CodeGenVisitor::visitCharExpr(ifccParser::CharExprContext *context
 	
 	int64_t convert = (int64_t) charac[1];
 	
-    cfg->current_bb->add_IRInstr(new IRInstr_pushconst(cfg->current_bb,convert));
+    cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushconst(cur_cfg()->current_bb,convert));
 	
 	return 0;
 }
 
 antlrcpp::Any CodeGenVisitor::visitCallFuncNoArgs(ifccParser::CallFuncNoArgsContext *context)  {
 	std::string funcname = context->LITERAL()->getText();
-	cfg->current_bb->add_IRInstr(new IRInstr_call(cfg->current_bb, funcname, 0));
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_call(cur_cfg()->current_bb, funcname, 0));
     return 0;
 }
 
@@ -280,7 +284,7 @@ antlrcpp::Any CodeGenVisitor::visitCallFuncArgs(ifccParser::CallFuncArgsContext 
 	//visit(context->children[0]);// pushes result in the stack 
 	//int nbargs= ??
 	//std::string funcname = context->LITERAL()->getText();
-	//cfg->current_bb->add_IRInstr(new IRInstr_call(cfg->current_bb, funcname, nbargs));
+	//cur_cfg()->current_bb->add_IRInstr(new IRInstr_call(cur_cfg()->current_bb, funcname, nbargs));
 
 	return 0;
 }
@@ -291,8 +295,8 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 	auto exprs = context->expr();  // list of expressions (might be size of instructions list - 1, because there can be an 'else' block)
 	auto instructions = context->instrblock();  // list of instruction blocks
 
-	BasicBlock *original_block = cfg->current_bb;  // block from which we're branching
-	BasicBlock *end_block = new BasicBlock(cfg, cfg->new_bb_name()); // block in which the instruction flow will continue (all branches points to it)
+	BasicBlock *original_block = cur_cfg()->current_bb;  // block from which we're branching
+	BasicBlock *end_block = new BasicBlock(cur_cfg(), cur_cfg()->new_bb_name()); // block in which the instruction flow will continue (all branches points to it)
 
 	bool else_block = false;  // used to determine if the original_block needs to branch to an else block or to the end_block
 
@@ -300,28 +304,28 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 		auto instrCtx = instructions[i];
 		if( i < exprs.size() ) { // means we're in a if (...) or else if (...)
 			auto exprCtx = exprs[i];
-			cfg->current_bb = original_block;
+			cur_cfg()->current_bb = original_block;
 			visit(exprCtx);  // pushes boolean to the stack, result of evaluation
 		}
 		
 
 		// Add new basic block for this branch
-		auto bb = new BasicBlock(cfg, cfg->new_bb_name());
+		auto bb = new BasicBlock(cur_cfg(), cur_cfg()->new_bb_name());
 		bb->default_next_block = end_block; // will generate a jump to end_block at the end of this block
-		cfg->add_bb(bb);
+		cur_cfg()->add_bb(bb);
 
 		// Generate branch code
-		cfg->current_bb = bb;
+		cur_cfg()->current_bb = bb;
 		visit(instrCtx);
 
 		// Add branching logic to starting block
 		if ( i != exprs.size() ) {  // means we're reading an if or else if
 			original_block->add_IRInstr( new IRInstr_pushconst(original_block, 0) );
-			original_block->add_IRInstr( new IRInstr_jne(original_block, cfg->current_bb->label) );
+			original_block->add_IRInstr( new IRInstr_jne(original_block, cur_cfg()->current_bb->label) );
 		}
 		else {  // means we're reading the else branch
 			// inconditionally jump to else block, as it is the default option
-			original_block->default_next_block = cfg->current_bb;
+			original_block->default_next_block = cur_cfg()->current_bb;
 			else_block = true;
 		}
 	}
@@ -330,8 +334,8 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 		original_block->default_next_block = end_block;
 	}
 
-	cfg->add_bb(end_block);
-	cfg->current_bb = end_block;
+	cur_cfg()->add_bb(end_block);
+	cur_cfg()->current_bb = end_block;
 
 	return 0;
 }
@@ -341,16 +345,16 @@ antlrcpp::Any CodeGenVisitor::visitWhileLoop(ifccParser::WhileLoopContext *conte
 	auto expr = context->expr();
 	auto instructions = context->instrblock();
 
-	BasicBlock *original_block = cfg->current_bb;  // block from which we're branching
+	BasicBlock *original_block = cur_cfg()->current_bb;  // block from which we're branching
 	
-	BasicBlock *while_start = new BasicBlock(cfg, cfg->new_bb_name()); // block for while condition check and instructions
-	BasicBlock *end_block = new BasicBlock(cfg, cfg->new_bb_name()); // block to jump to when while condition does not check anymore
+	BasicBlock *while_start = new BasicBlock(cur_cfg(), cur_cfg()->new_bb_name()); // block for while condition check and instructions
+	BasicBlock *end_block = new BasicBlock(cur_cfg(), cur_cfg()->new_bb_name()); // block to jump to when while condition does not check anymore
 
 	original_block->default_next_block = while_start; // connect previous intruction flow with start of while
 	while_start->default_next_block = while_start; // should jump to itself to loop
 	
 	// begin while code
-	cfg->current_bb = while_start;
+	cur_cfg()->current_bb = while_start;
 
 	// while condition evaluation
 	visit(expr); 
@@ -364,10 +368,10 @@ antlrcpp::Any CodeGenVisitor::visitWhileLoop(ifccParser::WhileLoopContext *conte
 
 	// loop jump will be generated automatically, as we set default_next_block
 
-	cfg->add_bb(while_start);
-	cfg->add_bb(end_block);
+	cur_cfg()->add_bb(while_start);
+	cur_cfg()->add_bb(end_block);
 
-	cfg->current_bb = end_block;
+	cur_cfg()->current_bb = end_block;
 
 	return 0;
 	/*

@@ -29,6 +29,8 @@ void CFG::add_bb(BasicBlock *bb){
 
 void CFG::gen_asm(ostream &o, Arch arch){
 
+    gen_prologue(o, arch);
+
     for( int i = 0; i < bbs.size(); i++){
         BasicBlock* b = bbs[i];
         o   << b->label
@@ -37,6 +39,8 @@ void CFG::gen_asm(ostream &o, Arch arch){
 
         b->gen_asm(o, arch);
     }
+
+    gen_epilogue(o, arch);
 }
 
 
@@ -68,13 +72,12 @@ void CFG::gen_epilogue(ostream &o, Arch arch) {/** ARM generation wrapper (calls
 
 
 void CFG::gen_x86_prologue(ostream &o){
-    o << ".text\n";
     #ifdef APPLE
-        o   << ".globl _main\n"
-    	    << "_main: \n";
+        o   << ".globl _" << functionName << "\n"
+    	    << "_" << functionName << ": \n";
     #else
-    	o   << ".globl main\n"
-            << "main: \n";
+    	o   << ".globl " << functionName << "\n"
+            << functionName << ": \n";
     #endif
     o   << "  pushq %rbp\n"
         << "  pushq %rsi\n"
@@ -111,11 +114,10 @@ void CFG::gen_x86_epilogue(ostream &o){
 
 void CFG::gen_arm_prologue(ostream &o){
     int alignedTopOffset = symbolTable->topOffset +  (16 - (symbolTable->topOffset % 16));
-    o << ".section	__TEXT,__text,regular,pure_instructions\n";
-    o   << ".build_version macos, 12, 0	sdk_version 12, 3\n"
-        << ".globl	_main                           ; -- Begin function main\n"
+    
+    o   << ".globl	_" << functionName << "                           ; -- Begin function " << functionName << "\n"
         << ".p2align	3\n"
-        << "_main:                                  ; @main\n"
+        << "_" << functionName << ":                                  ; @" << functionName << "\n"
         << ".cfi_startproc\n"
         << "; %bb.0:\n"
         // TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
@@ -187,6 +189,14 @@ void BasicBlock::gen_asm(ostream &o, Arch arch)
         }
         else if (arch == arm) {
             o << "  bl " << default_next_block->label << "\n";
+        }
+    }
+    else {
+        if(arch == x86) {
+            o << "  jmp " << cfg->get_epilogue_label(arch) << "\n";
+        }
+        else if (arch == arm) {
+            o << "  bl " << cfg->get_epilogue_label(arch) << "\n";
         }
     }
 }

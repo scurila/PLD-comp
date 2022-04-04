@@ -87,11 +87,27 @@ void CFG::gen_x86_prologue(ostream &o){
 
     int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
 
-    	// TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
     o   << "  movq %rsp, %rax\n"
     	<< "  subq $" << alignedTopOffset << ", %rax\n"
     	<< "  movq %rax, %rsp\n";
 
+    vector<string> callABIregnames = { "di", "si", "dx", "cx", "r8", "r9" };
+    int i = 0;
+    for(auto &argname : *func_argnames) {
+        if(i > 5) {
+            throw new exception("Unsupported operation: function has more than 6 parameters");
+        }
+
+        Entry *varEntry = symbolTable->get(argname);
+
+        std::string mov = makeInstrSuffix_x86("mov", varEntry->type);
+        std::string reg = makeRegisterName_x86(callABIregnames[i], varEntry->type);
+
+        // move parameter from ABI store to current frame
+        o << "  " << mov << " " << reg << ", " << -varEntry->bp_offset << "(%rbp)\n";
+
+        i++;
+    }
 }
 
 void CFG::gen_x86_epilogue(ostream &o){
@@ -164,6 +180,10 @@ string CFG::create_new_tempvar(string type){
 string CFG::get_var_type(string name){
      return symbolTable->get(name)->type;
 
+}
+
+void CFG::set_func_parameters(vector<string> *names) {
+    func_argnames = names;
 }
 
 // basic block management

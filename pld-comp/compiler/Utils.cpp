@@ -13,7 +13,7 @@ size_t typeSize(std::string typeName)
     return -1; // TODO handle errors correctly
 }
 
-std::string makeInstrSuffix_x86(std::string instruction, std::string typeName) {
+std::string makeInstrSuffix_x86(std::string &instruction, std::string &typeName) {
     switch(typeSize(typeName)) {
         case 4:
             return instruction + "l";
@@ -27,17 +27,38 @@ std::string makeInstrSuffix_x86(std::string instruction, std::string typeName) {
     return "ERR";
 }
 
-std::string makeRegisterName_x86(std::string regName, std::string typeName) {
+std::string makeRegisterName_x86(std::string &regName, std::string &typeName) {
     switch (typeSize(typeName)) {
-        case 8:
+        case 8: {
+            if(regName.at(0) == 'r') {  // means r8, r9, r10...
+                return "%" + regName;
+            }
+
             return "%r" + regName;
-        case 4:
+        }
+
+        case 4: {
+            if(regName.at(0) == 'r') {  // means r8, r9, r10...
+                return "%" + regName + "d";
+            }
+
             return "%e" + regName;
-        case 2:
+        }
+        case 2: {
+            if(regName.at(0) == 'r') {  // means r8, r9, r10...
+                return "%" + regName + "w";
+            }
+
             return "%" + regName;
-        case 1:
+        }
+        case 1: {
+            if(regName.at(0) == 'r') {  // means r8, r9, r10...
+                return "%" + regName + "b";
+            }
+
             regName.pop_back(); // remove 'x' suffix
             return "%" + regName + "l";
+        }
     }
     return "ERR";
 }

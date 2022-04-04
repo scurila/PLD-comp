@@ -154,6 +154,7 @@ public:
 	string create_new_tempvar(string type);
 	//int get_var_index(string name);
 	string get_var_type(string name);
+	void set_func_parameters(vector<string> *names);
 
 	// basic block management
 	string new_bb_name();
@@ -169,6 +170,7 @@ protected:
 	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 
 	string functionName;
+	vector<string> *func_argnames; // used in code generation (to interface with ABIs)
 
 private:
 	void gen_x86_prologue(ostream &o);

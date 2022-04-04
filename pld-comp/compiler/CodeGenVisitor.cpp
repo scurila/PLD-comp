@@ -10,11 +10,74 @@
 
 antlrcpp::Any CodeGenVisitor::visitMain(ifccParser::MainContext *ctx) 
 {
+	std::cout << "visitMain!" << std::endl;
+
 	CFG *main_cfg = new CFG("main");
 	program->add_cfg(main_cfg);
 	set_cfg(main_cfg);
 
 	antlrcpp::Any childrenRes = visitChildren(ctx);
+
+
+	// TODO move to CodeGenVisitor::visit() method (inherited from ifccBaseVisitor I think)
+	// verif stack de la fonction toutes vars utilisées - sinon warning
+	vector<string> unusedVars = cur_cfg()->symbolTable->unusedVars();
+	if (!unusedVars.empty()) {
+		string msg = "Dans ce contexte, la ou les variables suivantes on été déclarées mais n'ont pas été utilisées : ";
+		for (vector<string>::iterator it=unusedVars.begin(); it!=unusedVars.end(); ++it) {
+			msg.append(*it);
+			if ((it+1) != unusedVars.end()) msg.append(", ");
+		}
+		warningMessage(msg);
+	}
+
+	return childrenRes;
+}
+
+antlrcpp::Any CodeGenVisitor::visitDeclareFunc(ifccParser::DeclareFuncContext *ctx) 
+{
+	auto types = ctx->type();  // types[0] is this function's return type
+	auto names = ctx->LITERAL();  // LITERAL[0] is this function's name
+
+	std::cout << types.size() << " " << names.size() << std::endl;
+
+	// Compute function name:  func_X(arg1type,arg2type,arg3type) 
+	std::ostringstream func_name;
+	func_name << ctx->LITERAL(0)->getText() << "(";
+
+	bool first_param = true;
+	for(size_t i = 1; i < types.size(); i++) {
+		if(!first_param) {
+			func_name << ",";
+		} else {
+			first_param = false;
+		}
+		func_name << types[i]->getText();		
+	}
+
+	func_name << ")";
+
+	std::cout << "visitFunc:" << func_name.str() << std::endl;
+
+	// create new CFG and set it as current
+	CFG *new_func_cfg = new CFG(func_name.str());
+	program->add_cfg(new_func_cfg);
+	set_cfg(new_func_cfg);
+
+	// initialize symbol table with function parameters  [ TODO need to set offsets correctly to handle function calls ]
+	for(size_t i = 1; i < types.size(); i++) {
+		string typeName = types[i]->getText();
+		string literalName = names[i]->getText();
+
+		cur_cfg()->symbolTable->addEntry(literalName, typeName);
+	}
+
+	std::cout << "params ok\n";
+
+
+	antlrcpp::Any childrenRes = visitChildren(ctx);
+
+	// TODO move to CodeGenVisitor::visit() method (inherited from ifccBaseVisitor I think)
 	// verif stack de la fonction toutes vars utilisées - sinon warning
 	vector<string> unusedVars = cur_cfg()->symbolTable->unusedVars();
 	if (!unusedVars.empty()) {

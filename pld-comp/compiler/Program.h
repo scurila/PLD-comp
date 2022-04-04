@@ -17,6 +17,8 @@ public:
     vector<CFG*> cfgList;
     CFG *current_cfg;
 
+    // TODO will add globals table here later 
+
 private:
     void gen_text_header(ostream &o, Arch arch);
 

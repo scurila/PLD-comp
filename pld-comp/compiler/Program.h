@@ -46,7 +46,9 @@ private:
 
 class Program { 
 public:
-    Program(): current_cfg(nullptr) {}
+    Program(): current_cfg(nullptr) {
+        globals_table = new GlobalsTable();
+    }
 
     void add_cfg(CFG *cfg);
     void gen_asm(ostream &o, Arch arch);

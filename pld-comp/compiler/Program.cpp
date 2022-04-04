@@ -1,8 +1,11 @@
 
 #include "Program.h"
+#include "Exceptions.h"
 
 #include <iostream>
 #include <vector>
+
+// Program methods
 
 void Program::add_cfg(CFG *cfg) {
     cfgList.push_back(cfg);
@@ -26,3 +29,20 @@ void Program::gen_text_header(ostream &o, Arch arch) {
     }
 }
 
+
+// Globals methods
+GlobalsEntry *GlobalsTable::find_global(string name) {
+    if(globals.find(name) == globals.end()) {
+        throw new UndeclaredNameException(name);
+    }
+
+    return globals[name];
+}
+
+void GlobalsTable::register_global(GlobalsEntry *new_entry) {
+    if(globals.find(new_entry->name) == globals.end()) {
+        throw new NameAlreadyDefinedException(new_entry->name);
+    }
+
+    globals.insert(make_pair(new_entry->name, new_entry));
+}

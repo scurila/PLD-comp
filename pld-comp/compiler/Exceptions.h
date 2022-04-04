@@ -32,3 +32,23 @@ class UndeclaredVarException : public exception {
             return "La variable de nom " + varName + " est utilisée sans avoir été déclarée.";
         }
 };
+
+class UndeclaredNameException : public exception {
+    public:
+        UndeclaredNameException(string name): name(name.c_str()) {}
+        const string name; 
+    
+        const string message () const throw () {
+            return "Name '" + name + "' was not defined in this scope.";
+        }
+};
+
+class NameAlreadyDefinedException : public exception {
+    public:
+        NameAlreadyDefinedException(string name): name(name.c_str()) {}
+        const string name; 
+    
+        const string message () const throw () {
+            return "Name '" + name + "' was already defined in this scope.";
+        }
+};

@@ -43,7 +43,10 @@ antlrcpp::Any CodeGenVisitor::visitDeclareFunc(ifccParser::DeclareFuncContext *c
 
 	// Compute function name:  func_X(arg1type,arg2type,arg3type) 
 	std::ostringstream func_name;
-	func_name << ctx->LITERAL(0)->getText() << "(";
+	func_name << ctx->LITERAL(0)->getText();
+	
+	/* TODO keep for later (overload support)
+	func_name << "(";
 
 	bool first_param = true;
 	for(size_t i = 1; i < types.size(); i++) {
@@ -56,13 +59,15 @@ antlrcpp::Any CodeGenVisitor::visitDeclareFunc(ifccParser::DeclareFuncContext *c
 	}
 
 	func_name << ")";
-
-	std::cout << "visitFunc:" << func_name.str() << std::endl;
+	*/
 
 	// create new CFG and set it as current
 	CFG *new_func_cfg = new CFG(func_name.str());
 	program->add_cfg(new_func_cfg);
 	set_cfg(new_func_cfg);
+
+	// create globals table entry
+	auto globalEntry = new FuncEntry(func_name.str(), types[0]->getText());
 
 	// initialize symbol table with function parameters  [ TODO need to set offsets correctly to handle function calls ]
 	for(size_t i = 1; i < types.size(); i++) {
@@ -70,11 +75,13 @@ antlrcpp::Any CodeGenVisitor::visitDeclareFunc(ifccParser::DeclareFuncContext *c
 		string literalName = names[i]->getText();
 
 		cur_cfg()->symbolTable->addEntry(literalName, typeName);
+		globalEntry->arglist.push_back(typeName);
 	}
 
-	std::cout << "params ok\n";
+	// register global entry ; if this name already exists, this should fail
+	program->globals_table->register_global(globalEntry);
 
-
+	// explore function's code
 	antlrcpp::Any childrenRes = visitChildren(ctx);
 
 	// TODO move to CodeGenVisitor::visit() method (inherited from ifccBaseVisitor I think)

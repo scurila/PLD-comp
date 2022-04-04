@@ -52,3 +52,13 @@ class NameAlreadyDefinedException : public exception {
             return "Name '" + name + "' was already defined in this scope.";
         }
 };
+
+class TooManyParametersException : public exception {
+    public:
+        TooManyParametersException(string fname): fname(fname.c_str()) {}
+        const string fname; 
+    
+        const string message () const throw () {
+            return "Function '" + fname + "' has more than 6 parameters. This is currently not supported by this compiler.";
+        }
+};

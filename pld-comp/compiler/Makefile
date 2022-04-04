@@ -25,10 +25,6 @@ build/%.o: %.cpp generated/ifccParser.cpp
 	@mkdir -p build/IR
 	$(CC) $(CCFLAGS) -MMD -o $@ $< 
 
-build/IR/%.o: IR/%.cpp generated/ifccParser.cpp
-	@mkdir -p build/IR
-	$(CC) $(CCFLAGS) -MMD -o $@ $< 
-
 ##########################################
 # compile all the antlr-generated C++
 build/%.o: generated/%.cpp

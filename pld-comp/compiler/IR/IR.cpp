@@ -1,4 +1,6 @@
 #include "IR.h"
+#include "../Utils.h"
+#include "../Exceptions.h"
 
 void IRInstr::gen_asm(ostream &o, Arch arch) {/** ARM generation wrapper (calls x86 or arm generator based on flag) */
     switch(arch) 
@@ -95,7 +97,7 @@ void CFG::gen_x86_prologue(ostream &o){
     int i = 0;
     for(auto &argname : *func_argnames) {
         if(i > 5) {
-            throw new exception("Unsupported operation: function has more than 6 parameters");
+            throw new TooManyParametersException(functionName);
         }
 
         Entry *varEntry = symbolTable->get(argname);

@@ -87,7 +87,7 @@ void CFG::gen_x86_prologue(ostream &o){
         << "  pushq %rbx\n"
         << "  movq %rsp, %rbp\n";
 
-    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+    int alignedTopOffset = symbolTable->topOffset +  (16 - (symbolTable->topOffset % 16));
 
     o   << "  movq %rsp, %rax\n"
     	<< "  subq $" << alignedTopOffset << ", %rax\n"
@@ -115,7 +115,7 @@ void CFG::gen_x86_prologue(ostream &o){
 void CFG::gen_x86_epilogue(ostream &o){
     o  << get_epilogue_label(x86) << ":\n";
 
-    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+    int alignedTopOffset = symbolTable->topOffset +  (16 - (symbolTable->topOffset % 16));
 
 	o   // move rsp to pop rbp later
 		<< "  movq %rsp, %rbx\n"

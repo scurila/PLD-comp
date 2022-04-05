@@ -68,6 +68,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 
 		virtual antlrcpp::Any visitWhileLoop(ifccParser::WhileLoopContext *ctx) override;
 	
+		virtual antlrcpp::Any visitExprAlone(ifccParser::ExprAloneContext *ctx) override; 
+  
 	private:
 		// Alias methods for lighter code
 		CFG* cur_cfg() const { return program->current_cfg; }

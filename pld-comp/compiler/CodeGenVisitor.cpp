@@ -354,10 +354,17 @@ antlrcpp::Any CodeGenVisitor::visitCallFuncNoArgs(ifccParser::CallFuncNoArgsCont
 antlrcpp::Any CodeGenVisitor::visitCallFuncArgs(ifccParser::CallFuncArgsContext *context) {
 	
 	int nbArgs = context->expr().size();
+	visitChildren(context);	
 	std::string funcname = context->LITERAL()->getText();
 	cur_cfg()->current_bb->add_IRInstr(new IRInstr_call(cur_cfg()->current_bb, funcname, nbArgs));
 
 	return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitExprAlone(ifccParser::ExprAloneContext *context) {
+	visitChildren(context);	
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_popconst(cur_cfg()->current_bb));
+    return 0;
 }
 
 

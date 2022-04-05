@@ -22,6 +22,7 @@ instr: RETURN expr   # ReturnExpr
      | LITERAL '=' LITERAL # AssignVar
      | LITERAL '=' CONST   # AssignConst
      | LITERAL '=' expr # AssignExpr
+     | expr # ExprAlone
      |  # Nop
      ;
 

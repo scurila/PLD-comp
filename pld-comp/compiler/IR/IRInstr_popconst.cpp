@@ -9,5 +9,5 @@ void IRInstr_popconst::gen_x86(ostream &o)
 
 void IRInstr_popconst::gen_arm(ostream &o)
 {
-
+    o << "ldr x0, [sp], #16\n";
 }

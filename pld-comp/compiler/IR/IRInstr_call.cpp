@@ -29,5 +29,5 @@ void IRInstr_call::gen_arm(ostream &o) {
     //TODO : gérer proprement si trop de paramètres !
     o   << "  bl _"+functionName+"\n";
 
-    o   << "  pushq %rax\n";
+    o   << "  str x0, [sp, #-16]!\n";
 }

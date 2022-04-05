@@ -144,6 +144,24 @@ void CFG::gen_arm_prologue(ostream &o){
         << "add x29, sp, #" << alignedTopOffset << "\n" // on place le rbp en bas pile (mais au dessus des 2 backups à ne pas écraser - d'où pas le +16)
         << ".cfi_def_cfa_offset " << alignedTopOffset + 16 << "\n";
         // todo : change when functions supported
+        
+        vector<string> callABIregnames = { "x0", "x1", "x2", "x3", "x4", "x5" };
+        int i = 0;
+        for(auto argname = func_argnames->begin(); argname != func_argnames->end(); argname++) {
+            if(i > 5) {
+                throw new TooManyParametersException(functionName);
+            }
+
+            Entry *varEntry = symbolTable->get(*argname);
+
+            std::string mov = makeInstrSuffix_x86("mov", varEntry->type);
+            std::string reg = makeRegisterName_x86(callABIregnames[i], varEntry->type);
+
+            // move parameter from ABI store to current frame
+            o << "  str " << callABIregnames[i] << ", " << "[x29, #" << -varEntry->bp_offset <<"]\n";
+
+            i++;
+    }
 }
 
 void CFG::gen_arm_epilogue(ostream &o){

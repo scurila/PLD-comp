@@ -22,5 +22,13 @@ void IRInstr_call::gen_x86(ostream &o) {
     ////https://www.cs.uaf.edu/2015/fall/cs301/lecture/09_14_call.html
 
 void IRInstr_call::gen_arm(ostream &o) {
-    
+    o << "# call\n";
+   
+    for(int i=0; i<nbParams && i<6; i++){
+        o   << "   ldr x" << i << ", [sp], #16\n";
+    }
+    //TODO : gérer proprement si trop de paramètres !
+    o   << "  bl _"+functionName+"\n";
+
+    o   << "  pushq %rax\n";
 }

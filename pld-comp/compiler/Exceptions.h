@@ -13,7 +13,14 @@ inline void warningMessage(string msg) {
     cerr << "\033[1;33m [W]: " << msg << "\033[0m" << endl;
 }
 
-class DeclaredVarException : public exception {
+class ifccException : public exception {
+public:
+    ifccException() {}
+
+    virtual const string message() const throw () = 0;
+};
+
+class DeclaredVarException : public ifccException {
     public:
         DeclaredVarException(string vN): varName(vN.c_str()) {}
         const string varName; 
@@ -23,7 +30,7 @@ class DeclaredVarException : public exception {
         }
 };
 
-class UndeclaredVarException : public exception {
+class UndeclaredVarException : public ifccException {
     public:
         UndeclaredVarException(string vN): varName(vN.c_str()) {}
         const string varName; 
@@ -33,7 +40,7 @@ class UndeclaredVarException : public exception {
         }
 };
 
-class UndeclaredNameException : public exception {
+class UndeclaredNameException : public ifccException {
     public:
         UndeclaredNameException(string name): name(name.c_str()) {}
         const string name; 
@@ -43,7 +50,7 @@ class UndeclaredNameException : public exception {
         }
 };
 
-class NameAlreadyDefinedException : public exception {
+class NameAlreadyDefinedException : public ifccException {
     public:
         NameAlreadyDefinedException(string name): name(name.c_str()) {}
         const string name; 
@@ -53,7 +60,7 @@ class NameAlreadyDefinedException : public exception {
         }
 };
 
-class TooManyParametersException : public exception {
+class TooManyParametersException : public ifccException {
     public:
         TooManyParametersException(string fname): fname(fname.c_str()) {}
         const string fname; 

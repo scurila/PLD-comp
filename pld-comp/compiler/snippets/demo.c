@@ -9,11 +9,13 @@ int square(int a) {
 }
 
 void print_msg() {
-    int cpt = 10;
-    while(cpt > 0) {
+    int cpt = 0;
+    while(cpt < 10) {
         putchar('a' + cpt);
-        cpt--;
+        cpt = cpt + 1;
     }
+    putchar(10);
+    putchar(13);
 }
 
 int main() {

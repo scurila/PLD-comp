@@ -48,7 +48,7 @@ type : 'char' | 'int' | 'void';
 RETURN : 'return' ;
 
 CONST : [0-9]+ ;
-LITERAL: [a-zA-Z]+ ;
+LITERAL: [a-zA-Z0-9_]+ ;
 CHAR: '\'' .? '\'' ;
 
 ML_COMMENT : '/*' .*? '*/' -> skip ;

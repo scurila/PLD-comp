@@ -13,6 +13,7 @@
 #include "CodeGenVisitor.h"
 #include "IR/IR.h"
 #include "Program.h"
+#include "Exceptions.h"
 
 using namespace antlr4;
 using namespace std;
@@ -27,7 +28,7 @@ int main(int argn, const char **argv)
     }
     else
     {
-        cerr << "usage: ifcc path/to/file.c" << endl;
+        cerr << "usage: ifcc path/to/file.c [args]" << endl;
         exit(1);
     }
 
@@ -64,17 +65,20 @@ int main(int argn, const char **argv)
         CodeGenVisitor v(program);
         v.visit(tree);
     }
-    catch(const exception &e) {
+    catch(const ifccException *e) {
         std::cerr << "An error occurred during tree exploration: \n";
-        std::cerr << e.what() << std::endl;
+        std::cerr << e->message() << std::endl;
     }
+    /*catch(UndeclaredVarException &e) {
+        std::cerr << e.message() << std::endl;
+    }*/
     
     try {    
 	    program->gen_asm(std::cout, selectedArch);
     }
-    catch(const exception &e) {
+    catch(const ifccException *e) {
         std::cerr << "An error occurred during code generation: \n";
-        std::cerr << e.what() << std::endl;
+        std::cerr << e->message() << std::endl;
     }
 
     return 0;

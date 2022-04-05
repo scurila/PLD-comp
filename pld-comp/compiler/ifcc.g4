@@ -1,10 +1,10 @@
 grammar ifcc;
 
-axiom : main | function ;
+axiom : (main | function)* ;
 
 main: 'int' 'main' '(' ')' instrblock ;
 
-function: type LITERAL '(' (expr (',' expr)* )? ')' instrblock # DeclareFunc ;
+function: type LITERAL '(' (type LITERAL (',' type LITERAL)* )? ')' instrblock # DeclareFunc ;
 
 instrblock: '{' instrlist* '}' ;
 
@@ -22,6 +22,7 @@ instr: RETURN expr   # ReturnExpr
      | LITERAL '=' LITERAL # AssignVar
      | LITERAL '=' CONST   # AssignConst
      | LITERAL '=' expr # AssignExpr
+     | expr # ExprAlone
      |  # Nop
      ;
 

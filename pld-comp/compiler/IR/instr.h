@@ -29,3 +29,4 @@
 #include "IRInstr_sub.h"
 #include "IRInstr_mod.h"
 #include "IRInstr_opIncr.h"
+#include "IRInstr_popconst.h"

@@ -1,4 +1,6 @@
 #include "IR.h"
+#include "../Utils.h"
+#include "../Exceptions.h"
 
 void IRInstr::gen_asm(ostream &o, Arch arch) {/** ARM generation wrapper (calls x86 or arm generator based on flag) */
     switch(arch) 
@@ -85,19 +87,35 @@ void CFG::gen_x86_prologue(ostream &o){
         << "  pushq %rbx\n"
         << "  movq %rsp, %rbp\n";
 
-    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+    int alignedTopOffset = symbolTable->topOffset +  (16 - (symbolTable->topOffset % 16));
 
-    	// TODO: temporary as we need to know the number of variables allocated (this needs IR set up, or a pre-run on the code to identify variables)
     o   << "  movq %rsp, %rax\n"
     	<< "  subq $" << alignedTopOffset << ", %rax\n"
     	<< "  movq %rax, %rsp\n";
 
+    vector<string> callABIregnames = { "di", "si", "dx", "cx", "r8", "r9" };
+    int i = 0;
+    for(auto argname = func_argnames->begin(); argname != func_argnames->end(); argname++) {
+        if(i > 5) {
+            throw new TooManyParametersException(functionName);
+        }
+
+        Entry *varEntry = symbolTable->get(*argname);
+
+        std::string mov = makeInstrSuffix_x86("mov", varEntry->type);
+        std::string reg = makeRegisterName_x86(callABIregnames[i], varEntry->type);
+
+        // move parameter from ABI store to current frame
+        o << "  " << mov << " " << reg << ", " << -varEntry->bp_offset << "(%rbp)\n";
+
+        i++;
+    }
 }
 
 void CFG::gen_x86_epilogue(ostream &o){
     o  << get_epilogue_label(x86) << ":\n";
 
-    int alignedTopOffset = symbolTable->topOffset +  (8 - (symbolTable->topOffset % 8));
+    int alignedTopOffset = symbolTable->topOffset +  (16 - (symbolTable->topOffset % 16));
 
 	o   // move rsp to pop rbp later
 		<< "  movq %rsp, %rbx\n"

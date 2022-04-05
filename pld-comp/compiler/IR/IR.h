@@ -136,6 +136,7 @@ public:
 		bbs.push_back(current_bb);
 		
 		symbolTable = new SymbolTable();
+		func_argnames = new vector<string>();
 		nbTmpVar = 0;
 	}
 
@@ -160,6 +161,7 @@ public:
 	string new_bb_name();
 	BasicBlock *current_bb;
 	SymbolTable *symbolTable;
+	vector<string> *func_argnames; // used in code generation (to interface with ABIs)
 
 protected:
 

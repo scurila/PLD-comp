@@ -17,6 +17,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 
 		virtual antlrcpp::Any visitMain(ifccParser::MainContext *ctx) override ;
 
+		virtual antlrcpp::Any visitDeclareFunc(ifccParser::DeclareFuncContext *ctx) override;
+
 		virtual antlrcpp::Any visitInstrblock(ifccParser::InstrblockContext *ctx) override;
 		
 		virtual antlrcpp::Any visitReturnExpr(ifccParser::ReturnExprContext *context) override;
@@ -68,6 +70,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 
 		virtual antlrcpp::Any visitOperatorIncr(ifccParser::OperatorIncrContext *ctx) override;
 	
+		virtual antlrcpp::Any visitExprAlone(ifccParser::ExprAloneContext *ctx) override; 
+  
 	private:
 		// Alias methods for lighter code
 		CFG* cur_cfg() const { return program->current_cfg; }

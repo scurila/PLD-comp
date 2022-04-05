@@ -24,7 +24,9 @@ class Entry {
 
 class SymbolTable {
     public:
-        SymbolTable() : topOffset(8) {}; // default to 8 to leave some space for ARM (should be handled differently later)
+        SymbolTable() : topOffset(8) {  // default to 8 to leave some space for ARM (should be handled differently later)
+            push_context(); // push default context (= function parameters)
+        }; 
         bool addEntry(string name, string type);
         Entry* get(string name);
         vector<string> unusedVars();

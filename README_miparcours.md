@@ -13,20 +13,20 @@ Ce document a vocation à décrire l'état du projet au moment du rendu de mi-pa
 - [x] Linéarisation d'expressions
 - [x] Calcul des expressions arithmétiques (+, -, *, parenthèses)  [mais les priorités à gauche sont mal gérées]
 - [x] Utilisation de variables et constantes numériques dans les expressions
-- [ ] Utilisation de caractères dans les expressions
-- [ ] Gestion des opérations logiques bit-à-bit
-- [ ] Opérations de comparaisons
-- [ ] Opérations unaires
+- [x] Utilisation de caractères dans les expressions
+- [x] Gestion des opérations logiques bit-à-bit
+- [x] Opérations de comparaisons (<, >, <=, =>)
+- [x] Opérations unaires
 - [ ] Affectations comme en C (avec retour de valeur)
 - [x] Initialisations et déclarations de variables en une ligne (possiblement multiples)
   
 - [ ] Utilisation des fonctions standard `putchar`/`getchar`
 - [ ] Définition de fonctions avec paramètres, et type de retour int, char ou void
-- [ ] Structures de blocs avec { et }
-- [ ] Support des portées de variables et shadowing
-- [ ] Structures de contrôle `if, else, while`
-- [x] Support du `return` *expression*
-- [ ] Division (reconnu mais non testé), et modulo
+- [x] Structures de blocs avec { et }
+- [x] Support des portées de variables et shadowing
+- [x] Structures de contrôle `if, else, while`
+- [x] Support du `return` *expression*, n'importe où dans le programme
+- [x] Division, et modulo
   
 - [ ] Opérateurs d'affectation +=, -= (etc) et d'incrémentation/décrémentation ++, --
 - [ ] Tableaux 1D
@@ -38,7 +38,7 @@ Ce document a vocation à décrire l'état du projet au moment du rendu de mi-pa
 
 - [x] Support du type `int`
 - [ ] Support des autres types de base entiers (juste char reconnu mais est un int32)
-- [ ] Support des opérateurs arithmétiques et logiques <=, >=, <<, >> etc
+- [ ] Support des opérateurs arithmétiques et logiques <<, >> etc
 - [ ] Structures de contrôle `for, do while`
 - [ ] Variables globales
 

@@ -5,8 +5,7 @@ void IRInstr_call::gen_x86(ostream &o) {
     o << "# call\n";
    
     for(int i=0; i<nbParams && i<6; i++){
-        o   << "  popq %rbx\n"
-            << "  mov %rbx, "+abi[i]+"\n";
+        o   << "  popq "+abi[i]+"\n";
     }
     //TODO : gérer proprement si trop de paramètres !
     #ifdef APPLE

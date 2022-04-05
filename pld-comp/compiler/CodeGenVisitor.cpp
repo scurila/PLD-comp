@@ -10,8 +10,6 @@
 
 antlrcpp::Any CodeGenVisitor::visitMain(ifccParser::MainContext *ctx) 
 {
-	std::cout << "visitMain!" << std::endl;
-
 	CFG *main_cfg = new CFG("main");
 	program->add_cfg(main_cfg);
 	set_cfg(main_cfg);
@@ -38,8 +36,6 @@ antlrcpp::Any CodeGenVisitor::visitDeclareFunc(ifccParser::DeclareFuncContext *c
 {
 	auto types = ctx->type();  // types[0] is this function's return type
 	auto names = ctx->LITERAL();  // LITERAL[0] is this function's name
-
-	std::cout << types.size() << " " << names.size() << std::endl;
 
 	// Compute function name:  func_X(arg1type,arg2type,arg3type) 
 	std::ostringstream func_name;
@@ -69,9 +65,6 @@ antlrcpp::Any CodeGenVisitor::visitDeclareFunc(ifccParser::DeclareFuncContext *c
 	// create globals table entry
 	auto globalEntry = new FuncEntry(func_name.str(), types[0]->getText());
 
-	// prepare param names vector for CFG
-	vector<string> *argnames = new vector<string>();
-
 	// initialize symbol table with function parameters  [ TODO need to set offsets correctly to handle function calls ]
 	for(size_t i = 1; i < types.size(); i++) {
 		string typeName = types[i]->getText();
@@ -81,7 +74,7 @@ antlrcpp::Any CodeGenVisitor::visitDeclareFunc(ifccParser::DeclareFuncContext *c
 		cur_cfg()->symbolTable->addEntry(literalName, typeName);
 
 		// register argname for CFG (code gen)
-		argnames->push_back(literalName);
+		cur_cfg()->func_argnames->push_back(literalName);
 
 		// register function args in globals (compilation checks)
 		globalEntry->arglist.push_back(typeName);

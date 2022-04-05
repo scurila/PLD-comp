@@ -40,7 +40,7 @@ GlobalsEntry *GlobalsTable::find_global(string name) {
 }
 
 void GlobalsTable::register_global(GlobalsEntry *new_entry) {
-    if(globals.find(new_entry->name) == globals.end()) {
+    if(globals.find(new_entry->name) != globals.end()) {
         throw new NameAlreadyDefinedException(new_entry->name);
     }
 

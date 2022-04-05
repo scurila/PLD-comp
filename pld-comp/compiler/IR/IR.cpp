@@ -95,12 +95,12 @@ void CFG::gen_x86_prologue(ostream &o){
 
     vector<string> callABIregnames = { "di", "si", "dx", "cx", "r8", "r9" };
     int i = 0;
-    for(auto &argname : *func_argnames) {
+    for(auto argname = func_argnames->begin(); argname != func_argnames->end(); argname++) {
         if(i > 5) {
             throw new TooManyParametersException(functionName);
         }
 
-        Entry *varEntry = symbolTable->get(argname);
+        Entry *varEntry = symbolTable->get(*argname);
 
         std::string mov = makeInstrSuffix_x86("mov", varEntry->type);
         std::string reg = makeRegisterName_x86(callABIregnames[i], varEntry->type);
@@ -182,10 +182,6 @@ string CFG::create_new_tempvar(string type){
 string CFG::get_var_type(string name){
      return symbolTable->get(name)->type;
 
-}
-
-void CFG::set_func_parameters(vector<string> *names) {
-    func_argnames = names;
 }
 
 // basic block management

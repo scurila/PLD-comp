@@ -24,7 +24,7 @@ class Entry {
 
 class SymbolTable {
     public:
-        SymbolTable() : topOffset(baseOffset) {
+        SymbolTable() : topOffset(8) {  // default to 8 to leave some space for ARM (should be handled differently later)
             push_context(); // push default context (= function parameters)
         }; 
         bool addEntry(string name, string type);
@@ -35,7 +35,6 @@ class SymbolTable {
         void pop_context();
 
         int topOffset;
-        int baseOffset = 8;  // default to 8 to leave some space for ARM (should be handled differently later)
 
     protected: 
         vector<unordered_map<string, Entry*>*> table;

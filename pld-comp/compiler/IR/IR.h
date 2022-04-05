@@ -54,7 +54,8 @@ public:
 		binand,
 		binor,
 		op_incr,
-		popconst
+		popconst,
+		op_decr
 	} Operation;
 
 	/**  constructor */

@@ -1,10 +1,10 @@
 grammar ifcc;
 
-axiom : main | function ;
+axiom : (main | function)* ;
 
 main: 'int' 'main' '(' ')' instrblock ;
 
-function: type LITERAL '(' (expr (',' expr)* )? ')' instrblock # DeclareFunc ;
+function: type LITERAL '(' (type LITERAL (',' type LITERAL)* )? ')' instrblock # DeclareFunc ;
 
 instrblock: '{' instrlist* '}' ;
 
@@ -17,22 +17,24 @@ cflow_block:
 
 instr: RETURN expr   # ReturnExpr
      | RETURN  # ReturnVoid
-     | type LITERAL '('')' #CallFuncNoArgs
-     | type LITERAL '(' expr (',' expr)* ')' #CallFuncArgs
      | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst
      | type LITERAL (',' LITERAL)*  # DeclareVar
      | LITERAL '=' LITERAL # AssignVar
      | LITERAL '=' CONST   # AssignConst
      | LITERAL '=' expr # AssignExpr
+     | expr # ExprAlone
      |  # Nop
      ;
 
 expr: '(' expr ')' # OperatorPar
+     | LITERAL ('++') #OperatorIncr
      | expr ( '*' | '/' | '%') expr # OperatorMultDivMod
      | expr ( '+' | '-' ) expr # OperatorAddSub
      | expr ( '==' | '<' | '<=' | '>' | '>=' | '!=' ) expr # OperatorCmp
      | expr ( '&' | '|' ) expr # OperatorBinary
      | ( '-' | '!' ) expr # OperatorUnaryPrefix
+     | LITERAL '('')' #CallFuncNoArgs
+     | LITERAL '(' expr (',' expr)* ')' #CallFuncArgs
      | CONST # ConstExpr
      | LITERAL # LiteralExpr
      | CHAR # CharExpr

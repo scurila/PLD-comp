@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include <exception>
 
 #include "antlr4-runtime.h"
 #include "generated/ifccLexer.h"
@@ -50,10 +51,22 @@ int main(int argn, const char **argv)
 
     Program *program = new Program();
 
-    CodeGenVisitor v(program);
-    v.visit(tree);
-
-	program->gen_asm(std::cout, selectedArch);
+    try {
+        CodeGenVisitor v(program);
+        v.visit(tree);
+    }
+    catch(const exception &e) {
+        std::cerr << "An error occurred during tree exploration: \n";
+        std::cerr << e.what() << std::endl;
+    }
+    
+    try {    
+	    program->gen_asm(std::cout, selectedArch);
+    }
+    catch(const exception &e) {
+        std::cerr << "An error occurred during code generation: \n";
+        std::cerr << e.what() << std::endl;
+    }
 
     return 0;
 }

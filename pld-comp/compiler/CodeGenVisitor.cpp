@@ -15,6 +15,78 @@ antlrcpp::Any CodeGenVisitor::visitMain(ifccParser::MainContext *ctx)
 	set_cfg(main_cfg);
 
 	antlrcpp::Any childrenRes = visitChildren(ctx);
+
+
+	// TODO move to CodeGenVisitor::visit() method (inherited from ifccBaseVisitor I think)
+	// verif stack de la fonction toutes vars utilisées - sinon warning
+	vector<string> unusedVars = cur_cfg()->symbolTable->unusedVars();
+	if (!unusedVars.empty()) {
+		string msg = "Dans ce contexte, la ou les variables suivantes on été déclarées mais n'ont pas été utilisées : ";
+		for (vector<string>::iterator it=unusedVars.begin(); it!=unusedVars.end(); ++it) {
+			msg.append(*it);
+			if ((it+1) != unusedVars.end()) msg.append(", ");
+		}
+		warningMessage(msg);
+	}
+
+	return childrenRes;
+}
+
+antlrcpp::Any CodeGenVisitor::visitDeclareFunc(ifccParser::DeclareFuncContext *ctx) 
+{
+	auto types = ctx->type();  // types[0] is this function's return type
+	auto names = ctx->LITERAL();  // LITERAL[0] is this function's name
+
+	// Compute function name:  func_X(arg1type,arg2type,arg3type) 
+	std::ostringstream func_name;
+	func_name << ctx->LITERAL(0)->getText();
+	
+	/* TODO keep for later (overload support)
+	func_name << "(";
+
+	bool first_param = true;
+	for(size_t i = 1; i < types.size(); i++) {
+		if(!first_param) {
+			func_name << ",";
+		} else {
+			first_param = false;
+		}
+		func_name << types[i]->getText();		
+	}
+
+	func_name << ")";
+	*/
+
+	// create new CFG and set it as current
+	CFG *new_func_cfg = new CFG(func_name.str());
+	program->add_cfg(new_func_cfg);
+	set_cfg(new_func_cfg);
+
+	// create globals table entry
+	auto globalEntry = new FuncEntry(func_name.str(), types[0]->getText());
+
+	// initialize symbol table with function parameters  [ TODO need to set offsets correctly to handle function calls ]
+	for(size_t i = 1; i < types.size(); i++) {
+		string typeName = types[i]->getText();
+		string literalName = names[i]->getText();
+
+		// create entry in function's symbol table
+		cur_cfg()->symbolTable->addEntry(literalName, typeName);
+
+		// register argname for CFG (code gen)
+		cur_cfg()->func_argnames->push_back(literalName);
+
+		// register function args in globals (compilation checks)
+		globalEntry->arglist.push_back(typeName);
+	}
+
+	// register global entry ; if this name already exists, this should fail
+	program->globals_table->register_global(globalEntry);
+
+	// explore function's code
+	antlrcpp::Any childrenRes = visitChildren(ctx);
+
+	// TODO move to CodeGenVisitor::visit() method (inherited from ifccBaseVisitor I think)
 	// verif stack de la fonction toutes vars utilisées - sinon warning
 	vector<string> unusedVars = cur_cfg()->symbolTable->unusedVars();
 	if (!unusedVars.empty()) {
@@ -280,13 +352,19 @@ antlrcpp::Any CodeGenVisitor::visitCallFuncNoArgs(ifccParser::CallFuncNoArgsCont
 
   
 antlrcpp::Any CodeGenVisitor::visitCallFuncArgs(ifccParser::CallFuncArgsContext *context) {
-	//visit x children (x arguments, compter le nombre)
-	//visit(context->children[0]);// pushes result in the stack 
-	//int nbargs= ??
-	//std::string funcname = context->LITERAL()->getText();
-	//cur_cfg()->current_bb->add_IRInstr(new IRInstr_call(cur_cfg()->current_bb, funcname, nbargs));
+	
+	int nbArgs = context->expr().size();
+	visitChildren(context);	
+	std::string funcname = context->LITERAL()->getText();
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_call(cur_cfg()->current_bb, funcname, nbArgs));
 
 	return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitExprAlone(ifccParser::ExprAloneContext *context) {
+	visitChildren(context);	
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_popconst(cur_cfg()->current_bb));
+    return 0;
 }
 
 
@@ -339,6 +417,16 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 
 	return 0;
 }
+
+antlrcpp::Any CodeGenVisitor::visitOperatorIncr(ifccParser::OperatorIncrContext *context){
+		std::string literal = context->LITERAL()->getText();
+
+    cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb,literal));
+
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_opIncr(cur_cfg()->current_bb));
+	return 0; 
+}
+
 
 antlrcpp::Any CodeGenVisitor::visitWhileLoop(ifccParser::WhileLoopContext *context) {
 

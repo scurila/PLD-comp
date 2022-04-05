@@ -450,6 +450,16 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 	return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitOperatorIncr(ifccParser::OperatorIncrContext *context){
+		std::string literal = context->LITERAL()->getText();
+
+    cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb,literal));
+
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_opIncr(cur_cfg()->current_bb));
+	return 0; 
+}
+
+
 antlrcpp::Any CodeGenVisitor::visitWhileLoop(ifccParser::WhileLoopContext *context) {
 
 	auto expr = context->expr();

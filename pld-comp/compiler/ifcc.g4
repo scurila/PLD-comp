@@ -28,6 +28,7 @@ instr: RETURN expr   # ReturnExpr
      ;
 
 expr: '(' expr ')' # OperatorPar
+     | LITERAL ('++') #OperatorIncr
      | expr ( '*' | '/' | '%') expr # OperatorMultDivMod
      | expr ( '+' | '-' ) expr # OperatorAddSub
      | expr ( '==' | '<' | '<=' | '>' | '>=' | '!=' ) expr # OperatorCmp

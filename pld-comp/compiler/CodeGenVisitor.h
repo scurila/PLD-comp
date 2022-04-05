@@ -69,6 +69,8 @@ class  CodeGenVisitor : public ifccBaseVisitor {
 		virtual antlrcpp::Any visitIfElseIfElse(ifccParser::IfElseIfElseContext *ctx) override;
 
 		virtual antlrcpp::Any visitWhileLoop(ifccParser::WhileLoopContext *ctx) override;
+
+		virtual antlrcpp::Any visitOperatorIncr(ifccParser::OperatorIncrContext *ctx) override;
 	
 		virtual antlrcpp::Any visitExprAlone(ifccParser::ExprAloneContext *ctx) override; 
   

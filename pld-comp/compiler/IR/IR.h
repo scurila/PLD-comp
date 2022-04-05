@@ -53,6 +53,7 @@ public:
 		pushconst,
 		binand,
 		binor,
+		op_incr,
 		popconst
 	} Operation;
 

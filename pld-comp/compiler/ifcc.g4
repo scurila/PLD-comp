@@ -22,10 +22,12 @@ instr: RETURN expr   # ReturnExpr
      | LITERAL '=' LITERAL # AssignVar
      | LITERAL '=' CONST   # AssignConst
      | LITERAL '=' expr # AssignExpr
+     | expr # ExprAlone
      |  # Nop
      ;
 
 expr: '(' expr ')' # OperatorPar
+     | LITERAL ('++') #OperatorIncr
      | expr ( '*' | '/' | '%') expr # OperatorMultDivMod
      | expr ( '+' | '-' ) expr # OperatorAddSub
      | expr ( '==' | '<' | '<=' | '>' | '>=' | '!=' ) expr # OperatorCmp

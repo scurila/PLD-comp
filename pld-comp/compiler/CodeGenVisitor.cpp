@@ -164,6 +164,38 @@ antlrcpp::Any CodeGenVisitor::visitInitVarConst(ifccParser::InitVarConstContext 
 	return 0;
 }
 
+
+antlrcpp::Any CodeGenVisitor::visitInitVarExpr(ifccParser::InitVarExprContext *context) {
+
+	std::string type = context->type()->getText();
+	int type_size = typeSize(type);
+	uint64_t type_mask = 0;   // mask of ones of the length of type_size*8, used to check value length
+	for(int i = 0; i < type_size * 8; i++) {
+		type_mask |= ((uint64_t)1) << i;
+	}
+
+	auto literals = context->LITERAL();
+	auto values = context->expr();
+	
+	auto valuesIt = begin(values);
+	for(auto itLit = begin(literals); itLit != end(literals); ++itLit) {
+    	string literalName = (*itLit)->getText();
+		//int64_t value = stoll( (*valuesIt)->getText() );
+		visit(*valuesIt);
+		
+		try {
+			cur_cfg()->symbolTable->addEntry(literalName, type);
+			cur_cfg()->current_bb->add_IRInstr(new IRInstr_popvar(cur_cfg()->current_bb, literalName));
+		} catch (DeclaredVarException e) {
+			errorMessage(e.message());
+			// todo : return différent ? 
+		}
+		++valuesIt;
+	}
+
+    return 0;
+}
+
 antlrcpp::Any CodeGenVisitor::visitDeclareVar(ifccParser::DeclareVarContext *context) 
 {
 	std::string type = context->type()->getText();

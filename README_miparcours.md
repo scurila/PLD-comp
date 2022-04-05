@@ -11,17 +11,17 @@ Ce document a vocation à décrire l'état du projet au moment du rendu de mi-pa
 - [x] Les commentaires sont ignorés
 - [x] Déclaration de variables, à plusieurs endroits dans le code
 - [x] Linéarisation d'expressions
-- [x] Calcul des expressions arithmétiques (+, -, *, parenthèses)  [mais les priorités à gauche sont mal gérées]
+- [x] Calcul des expressions arithmétiques (+, -, *, parenthèses)
 - [x] Utilisation de variables et constantes numériques dans les expressions
 - [x] Utilisation de caractères dans les expressions
 - [x] Gestion des opérations logiques bit-à-bit
 - [x] Opérations de comparaisons (<, >, <=, =>)
 - [x] Opérations unaires
 - [ ] Affectations comme en C (avec retour de valeur)
-- [x] Initialisations et déclarations de variables en une ligne (possiblement multiples)
+- [x] Initialisations et déclarations de variables en une ligne (possiblement multiples), mais uniquement pour des constantes, pske flm pa eu le tps
   
-- [ ] Utilisation des fonctions standard `putchar`/`getchar`
-- [ ] Définition de fonctions avec paramètres, et type de retour int, char ou void
+- [x] Utilisation des fonctions standard `putchar`/`getchar`
+- [x] Définition de fonctions avec paramètres, et type de retour int, char ou void
 - [x] Structures de blocs avec { et }
 - [x] Support des portées de variables et shadowing
 - [x] Structures de contrôle `if, else, while`
@@ -36,7 +36,7 @@ Ce document a vocation à décrire l'état du projet au moment du rendu de mi-pa
 - [ ] `switch-case`
 - [ ] Opérateurs logiques &&, ||
 
-- [x] Support du type `int`
+- [x] Support des type `int` et `char`
 - [ ] Support des autres types de base entiers (juste char reconnu mais est un int32)
 - [ ] Support des opérateurs arithmétiques et logiques <<, >> etc
 - [ ] Structures de contrôle `for, do while`
@@ -52,7 +52,7 @@ Ce document a vocation à décrire l'état du projet au moment du rendu de mi-pa
 - [ ] Vérification de la cohérence des appels de fonctions et leurs paramètres
 - [x] Vérification qu'une variable utilisée a été déclarée préalablement
 - [x] Vérification qu'une variable n'est pas déclarée plusieurs fois
-- [ ] Vérification qu'une variable est utilisée au moins une fois
+- [x] Vérification qu'une variable est utilisée au moins une fois
 
 - [x] Reciblage vers plusieurs architectures **(supporté, mais pas encore de CLI)**
 - [ ] Propagation simple de constantes

@@ -3,6 +3,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <exception>
+#include <string>
 
 #include "antlr4-runtime.h"
 #include "generated/ifccLexer.h"
@@ -19,7 +20,7 @@ using namespace std;
 int main(int argn, const char **argv)
 {
     stringstream in;
-    if (argn == 2)
+    if (argn >= 2)
     {
         ifstream lecture(argv[1]);
         in << lecture.rdbuf();
@@ -30,8 +31,16 @@ int main(int argn, const char **argv)
         exit(1);
     }
 
-    Arch selectedArch = arm;
+    Arch selectedArch = x86;
 
+    for(int i = 2; i < argn; i++) {
+        string arg = argv[i];
+        if(arg.rfind("--arch=") == 0) {
+            string val = arg.substr(7);
+            if(val == "arm") selectedArch = arm;
+            else if(val == "x86") selectedArch = x86;
+        }
+    }
 
     ANTLRInputStream input(in.str());
 

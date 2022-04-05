@@ -4,4 +4,5 @@ int main(){
     y = 5;
     z = 3;
     x = y * x - z;
+    return x;
 }

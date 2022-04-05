@@ -16,5 +16,5 @@ void IRInstr_return::gen_arm(ostream &o)
         o << "ldr x0, [sp], #16\n"; // POP w0 : lire [sp], puis pop de 4 (wX 32 bits)
     }
 
-    o << "  bl" << bb->cfg->get_epilogue_label(arm) << "\n";
+    o << "  bl " << bb->cfg->get_epilogue_label(arm) << "\n";
 }

@@ -168,7 +168,7 @@ string CFG::get_var_type(string name){
 
 // basic block management
 string CFG::new_bb_name(){
-    string name = "." + functionName + "_" + std::to_string(nextBBnumber);
+    string name = "L" + functionName + std::to_string(nextBBnumber);
     nextBBnumber++;
     return name;
 }

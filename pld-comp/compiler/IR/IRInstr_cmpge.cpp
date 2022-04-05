@@ -12,5 +12,11 @@ void IRInstr_cmpge::gen_x86(ostream &o) {
 }
 
 void IRInstr_cmpge::gen_arm(ostream &o) {
-
+    o << "; -- cmplt \n";
+    o << "ldr x8, [sp], #16\n" // POP right member
+        << "ldr x9, [sp], #16\n" // POP left member 
+        << "cmp x9, x8\n"
+        << "cset x9, ge\n"
+        << "and x9, x9, #0x1\n" 
+        << "str x9, [sp, #-16]!\n"; // PUSH w9 
 }

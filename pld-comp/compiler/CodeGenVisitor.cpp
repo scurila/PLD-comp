@@ -418,14 +418,27 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 	return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitOperatorIncr(ifccParser::OperatorIncrContext *context){
-		std::string literal = context->LITERAL()->getText();
+antlrcpp::Any CodeGenVisitor:: visitOperatorUnaryPostfix(ifccParser::OperatorUnaryPostfixContext *context) {
+	std::string literal = context->LITERAL()->getText();
+	string op = context->children[1]->getText();
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb,literal));
 
-    cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb,literal));
+	if(op=="++")
+	{
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_opIncr(cur_cfg()->current_bb));
+	}
+    
+	else if(op== "--")
+	{
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_opDecr(cur_cfg()->current_bb));
+	}
 
-	cur_cfg()->current_bb->add_IRInstr(new IRInstr_opIncr(cur_cfg()->current_bb));
+	
+
+
 	return 0; 
 }
+
 
 
 antlrcpp::Any CodeGenVisitor::visitWhileLoop(ifccParser::WhileLoopContext *context) {

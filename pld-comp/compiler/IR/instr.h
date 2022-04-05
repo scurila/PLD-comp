@@ -30,3 +30,4 @@
 #include "IRInstr_mod.h"
 #include "IRInstr_opIncr.h"
 #include "IRInstr_popconst.h"
+#include "IRInstr_opDecr.h"

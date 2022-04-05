@@ -17,8 +17,6 @@ cflow_block:
 
 instr: RETURN expr   # ReturnExpr
      | RETURN  # ReturnVoid
-     | type LITERAL '('')' #CallFuncNoArgs
-     | type LITERAL '(' expr (',' expr)* ')' #CallFuncArgs
      | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst
      | type LITERAL (',' LITERAL)*  # DeclareVar
      | LITERAL '=' LITERAL # AssignVar
@@ -33,6 +31,8 @@ expr: '(' expr ')' # OperatorPar
      | expr ( '==' | '<' | '<=' | '>' | '>=' | '!=' ) expr # OperatorCmp
      | expr ( '&' | '|' ) expr # OperatorBinary
      | ( '-' | '!' ) expr # OperatorUnaryPrefix
+     | LITERAL '('')' #CallFuncNoArgs
+     | LITERAL '(' expr (',' expr)* ')' #CallFuncArgs
      | CONST # ConstExpr
      | LITERAL # LiteralExpr
      | CHAR # CharExpr

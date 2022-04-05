@@ -52,7 +52,8 @@ public:
 		pushvar,
 		pushconst,
 		binand,
-		binor
+		binor,
+		op_incr
 	} Operation;
 
 	/**  constructor */

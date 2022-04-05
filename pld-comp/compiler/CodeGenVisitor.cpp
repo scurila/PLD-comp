@@ -339,6 +339,13 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 	return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitOperatorIncr(ifccParser::OperatorIncrContext *context){
+	visit(context->children[0]);// pushes result in the stack 
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_opIncr(cur_cfg()->current_bb));
+	return 0; 
+}
+
+
 antlrcpp::Any CodeGenVisitor::visitWhileLoop(ifccParser::WhileLoopContext *context) {
 
 	auto expr = context->expr();

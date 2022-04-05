@@ -18,6 +18,7 @@ cflow_block:
 instr: RETURN expr   # ReturnExpr
      | RETURN  # ReturnVoid
      | type LITERAL '=' CONST (',' LITERAL '=' CONST)* # InitVarConst
+     | type LITERAL '=' expr (',' LITERAL '=' expr)* # InitVarExpr
      | type LITERAL (',' LITERAL)*  # DeclareVar
      | LITERAL '=' LITERAL # AssignVar
      | LITERAL '=' CONST   # AssignConst

@@ -53,7 +53,8 @@ public:
 		pushconst,
 		binand,
 		binor,
-		op_incr
+		op_incr,
+		popconst
 	} Operation;
 
 	/**  constructor */

@@ -419,7 +419,10 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 }
 
 antlrcpp::Any CodeGenVisitor::visitOperatorIncr(ifccParser::OperatorIncrContext *context){
-	visit(context->children[0]);// pushes result in the stack 
+		std::string literal = context->LITERAL()->getText();
+
+    cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb,literal));
+
 	cur_cfg()->current_bb->add_IRInstr(new IRInstr_opIncr(cur_cfg()->current_bb));
 	return 0; 
 }

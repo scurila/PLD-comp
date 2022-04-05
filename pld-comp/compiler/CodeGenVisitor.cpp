@@ -280,11 +280,10 @@ antlrcpp::Any CodeGenVisitor::visitCallFuncNoArgs(ifccParser::CallFuncNoArgsCont
 
   
 antlrcpp::Any CodeGenVisitor::visitCallFuncArgs(ifccParser::CallFuncArgsContext *context) {
-	//visit x children (x arguments, compter le nombre)
-	//visit(context->children[0]);// pushes result in the stack 
-	//int nbargs= ??
-	//std::string funcname = context->LITERAL()->getText();
-	//cur_cfg()->current_bb->add_IRInstr(new IRInstr_call(cur_cfg()->current_bb, funcname, nbargs));
+	
+	int nbArgs = context->expr().size();
+	std::string funcname = context->LITERAL()->getText();
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_call(cur_cfg()->current_bb, funcname, nbArgs));
 
 	return 0;
 }

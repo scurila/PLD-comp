@@ -12,7 +12,7 @@ void print_msg() {
     int cpt = 0;
     while(cpt < 10) {
         putchar('a' + cpt);
-        cpt = cpt++;
+        cpt++;
     }
     putchar(10);
     putchar(13);

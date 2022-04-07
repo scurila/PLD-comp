@@ -453,19 +453,21 @@ antlrcpp::Any CodeGenVisitor::visitIfElseIfElse(ifccParser::IfElseIfElseContext 
 antlrcpp::Any CodeGenVisitor:: visitOperatorUnaryPostfix(ifccParser::OperatorUnaryPostfixContext *context) {
 	std::string literal = context->LITERAL()->getText();
 	string op = context->children[1]->getText();
-	cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb,literal));
+
+	cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb,literal));  // push old value for later use
 
 	if(op=="++")
 	{
-		cur_cfg()->current_bb->add_IRInstr(new IRInstr_opIncr(cur_cfg()->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb, literal)); // push var to increment it
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_opIncr(cur_cfg()->current_bb)); // increment 
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_popvar(cur_cfg()->current_bb, literal)); // pop var to store result
 	}
-    
 	else if(op== "--")
 	{
-		cur_cfg()->current_bb->add_IRInstr(new IRInstr_opDecr(cur_cfg()->current_bb));
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_pushvar(cur_cfg()->current_bb, literal)); // push var to increment it
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_opDecr(cur_cfg()->current_bb)); // decrement 
+		cur_cfg()->current_bb->add_IRInstr(new IRInstr_popvar(cur_cfg()->current_bb, literal)); // pop var to store result
 	}
-
-	
 
 
 	return 0; 

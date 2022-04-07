@@ -38,7 +38,7 @@ int main()
 
     z = returnfour();
 
-    z = z + hello();
+    z = z + hello(1);
 
-    return z;  // should be 102+2=104
+    return z;  
 }

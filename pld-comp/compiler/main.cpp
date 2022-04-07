@@ -32,7 +32,7 @@ int main(int argn, const char **argv)
         exit(1);
     }
 
-    Arch selectedArch = x86;
+    Arch selectedArch = arm;
 
     for(int i = 2; i < argn; i++) {
         string arg = argv[i];
